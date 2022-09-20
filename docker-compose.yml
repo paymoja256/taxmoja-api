@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  mita_server:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend/:/backend/
+    env_file:
+      - ./backend/.env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - "mita_db"
+    networks:
+      - app-tier
+
+  mita_db:
+    image: mysql
+    env_file:
+      - ./backend/.env
+    ports:
+      - "3306:3306"
+    networks:
+      - app-tier
+
+networks:
+  app-tier:
+    driver: bridge

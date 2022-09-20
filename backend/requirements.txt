@@ -1,0 +1,47 @@
+# app
+fastapi
+uvicorn
+pydantic
+email-validator
+structlog
+fastapi_chameleon
+aiofiles
+aioredis
+aiosqlite
+fastapi_caching
+requests
+Jinja2
+jinja2-time
+pytz
+pyOpenSSL
+pycryptodome
+httpx
+pyqrcode
+pypng
+simplejson
+Padding
+ipython
+
+# db
+mysql-connector-python-rf
+databases[mysql]
+databases[asyncmy]
+SQLAlchemy
+alembic
+aiomysql
+pymysql
+asyncpg
+cryptography
+
+# dev
+#pytestHMACSHA256
+pytest-asyncio
+asgi-lifespan
+
+
+#api_settings
+bitrix24-rest
+xero-python
+
+
+

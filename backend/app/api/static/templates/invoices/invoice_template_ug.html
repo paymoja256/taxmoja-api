@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<!--
+Author: Keenthemes
+Product Name: Metronic - Bootstrap 5 HTML, VueJS, React, Angular & Laravel Admin Dashboard Theme
+Purchase: https://1.envato.market/EA4JP
+Website: http://www.keenthemes.com
+Contact: support@keenthemes.com
+Follow: www.twitter.com/keenthemes
+Dribbble: www.dribbble.com/keenthemes
+Like: www.facebook.com/keenthemes
+License: For each use you must have a valid license purchased only from above link in order to legally use the theme for your project.
+-->
+<html lang="en">
+	<!--begin::Head-->
+	<head><base href="../../../">
+		<title>MiTa Invoice</title>
+		<meta charset="utf-8" />
+		<title>Engie Tax (MoTa)</title>
+		<meta charset="utf-8" />
+		<meta name="description" content="The most advanced Fiscal Invoicing Tax Service trusted by a number of large companies. Multi-country,Multi-ERPs,Short Implementation Times, Affordable." />
+		<meta name="keywords" content="Tax Integration, Fiscal Invoicing Software" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta property="og:locale" content="en_US" />
+		<meta property="og:type" content="article" />
+		<meta property="og:title" content="Mota- Fiscal Invoicing Tax service &amp; by Engie" />
+		<meta property="og:url" content="https://Engie.com" />
+		<meta property="og:site_name" content="Engie | Mota" />
+		<link rel="canonical" href="https://Engie.com" />
+		<link rel="shortcut icon" href="/static/metronic/demo1/assets/media/logos/favicon.ico" />
+		<!--begin::Fonts-->
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
+		<!--end::Fonts-->
+		<!--begin::Page Vendor Stylesheets(used by this page)-->
+		<link href="../../static/metronic/demo1/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css" />
+		<!--end::Page Vendor Stylesheets-->
+		<!--begin::Global Stylesheets Bundle(used by all pages)-->
+		<link href="../../static/metronic/demo1/assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
+		<link href="../../static/metronic/demo1/assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+		<!--end::Global Stylesheets Bundle-->
+	</head>
+	<!--end::Head-->
+	<!--begin::Body-->
+	<body>
+
+		<!--begin::Invoice 2 main-->
+								<div class="card">
+									<!--begin::Body-->
+									<div class="card-body p-lg-20">
+										<!--begin::Layout-->
+										<div class="d-flex flex-column flex-xl-row">
+											<!--begin::Content-->
+											<div class="flex-lg-row-fluid me-xl-18 mb-10 mb-xl-0">
+												<!--begin::Invoice 2 content-->
+												<div class="mt-n1">
+													<!--begin::Top-->
+													<div class="d-flex flex-stack pb-10">
+														<!--begin::Logo-->
+														<a href="#">
+															<img alt="Logo" src="../../static/logos/ug/{{request.sellerDetails['tin']}}/logo.png" style="width:100px;height:100px;"/>
+														</a>
+														<!--end::Logo-->
+														<!--begin::Action-->
+<!-- 														<a href="#" class="btn btn-sm btn-success">Pay Now</a> -->
+														<!--end::Action-->
+													</div>
+													<!--end::Top-->
+													<!--begin::Wrapper-->
+													<div class="m-0">
+														<!--begin::Label-->
+														{% if request.basicInformation['invoiceType'] == '1' %}
+														<div class="fw-bolder fs-3 text-gray-800 mb-8" >Invoice</div>
+														 {% else %}
+														<div class="fw-bolder fs-3 text-gray-800 mb-8" >Credit Note</div>
+														{% endif %}
+														<!--end::Label-->
+														<!--begin::Row-->
+														<div class="row g-5 mb-11">
+															<!--end::Col-->
+															<div class="col-sm-4">
+																<!--end::Label-->
+																<div class="fw-bold fs-7 text-gray-600 mb-1">Issue Date:</div>
+																<!--end::Label-->
+																<!--end::Col-->
+																<div class="fw-bolder fs-6 text-gray-800">{{request.basicInformation['issuedDate']}}</div>
+																<!--end::Col-->
+															</div>
+															<!--end::Col-->
+															<!--end::Col-->
+															<div class="col-sm-4">
+																<!--end::Label-->
+																<div class="fw-bold fs-7 text-gray-600 mb-1">Device Number</div>
+																<!--end::Label-->
+																<!--end::Info-->
+																<div class="fw-bolder fs-6 text-gray-800 d-flex align-items-center flex-wrap">
+																	<span class="pe-2">{{request.basicInformation['deviceNo']}}</span>
+
+																</div>
+																<!--end::Info-->
+															</div>
+															<!--end::Col-->
+
+															<!--end::Col-->
+															<div class="col-sm-4">
+																<!--end::Label-->
+																<div class="fw-bold fs-7 text-gray-600 mb-1">Seller Reference</div>
+																<!--end::Label-->
+																<!--end::Info-->
+																<div class="fw-bolder fs-6 text-gray-800 d-flex align-items-center flex-wrap">
+																	<span class="pe-2">{{request.sellerDetails['referenceNo']}}</span>
+																	<span class="fs-7 text-danger d-flex align-items-center">
+																	<span class="bullet bullet-dot bg-danger me-2"></span>Due in 30 days</span>
+																</div>
+																<!--end::Info-->
+															</div>
+															<!--end::Col-->
+
+														</div>
+														<!--end::Row-->
+														<!--begin::Row-->
+														<div class="row g-5 mb-12">
+															<!--end::Col-->
+															<div class="col-sm-4">
+																<!--end::Label-->
+																<div class="fw-bold fs-7 text-gray-600 mb-1">Issue For:</div>
+																<!--end::Label-->
+																<!--end::Text-->
+																<div class="fw-bolder fs-6 text-gray-800">{{request.buyerDetails['buyerLegalName']}}</div>
+																<!--end::Text-->
+																<!--end::Description-->
+																<div class="fw-bold fs-7 text-gray-600" tal:condition="python: 'buyerTin' in request.buyerDetails"><span class="fw-bold fs-7 text-gray-800">Buyer Tin: </span> {{request.buyerDetails['buyerTin']}}</div>
+																<!--end::Description-->
+															</div>
+															<!--end::Col-->
+															<!--end::Col-->
+															<div class="col-sm-4">
+																<!--end::Label-->
+																<div class="fw-bold fs-7 text-gray-600 mb-1">Issued By:</div>
+																<!--end::Label-->
+																<!--end::Text-->
+																<div class="fw-bolder fs-6 text-gray-800">{{request.sellerDetails['businessName']}}</div>
+																<!--end::Text-->
+																<!--end::Description-->
+																<div class="fw-bold fs-7 text-gray-600">{{request.sellerDetails['address']}}
+																<br />Kampala, Uganda</div>
+																<!--end::Description-->
+
+																<div class="fw-bold fs-7 text-gray-600"><span class="fw-bold fs-7 text-gray-800">Tin Number: </span> {{request.sellerDetails['tin']}}</div>
+
+																<div class="fw-bold fs-7 text-gray-600"><span class="fw-bold fs-7 text-gray-800">Issuer: </span>{{request.basicInformation['operator']}}</div>
+															</div>
+															<!--end::Col-->
+															<!--end::Col-->
+															<div class="col-sm-4">
+																<!--end::Label-->
+																<div class="fw-bold fs-7 text-gray-600 mb-1">URA Information:</div>
+																<!--end::Label-->
+																<!--end::Text-->
+																<div class="fw-bold fs-7 text-gray-600"><span class="fw-bold fs-7 text-gray-800">FDN: </span> {{request.basicInformation['invoiceNo']}}</div>
+																<!--end::Text-->
+																<!--end::Description-->
+																<div class="fw-bold fs-7 text-gray-600"><span class="fw-bold fs-7 text-gray-800">Verification Code: </span> {{request.basicInformation['antifakeCode']}}</div>
+																<!--end::Description-->
+																<!--end::Description-->
+																<div class="fw-bold fs-7 text-gray-600"><span class="fw-bold fs-7 text-gray-800"> Invoice Id: </span> {{request.basicInformation['invoiceId']}}</div>
+																<!--end::Description-->
+																<!--end::Description-->
+																<div class="fw-bold fs-7 text-gray-600"><span class="fw-bold fs-7 text-gray-800"> Currency: </span> {{request.basicInformation['currency']}}</div>
+																<!--end::Description-->
+
+
+															</div>
+															<!--end::Col-->
+														</div>
+														<!--end::Row-->
+														<!--begin::Content-->
+														<div class="flex-grow-1">
+														<!--end::Label-->
+																<h6 class="mb-8 fw-boldest  border-bottom text-gray-600 text-hover-primary">GOODS DETAILS</h6>
+																<!--end::Label-->
+															<!--begin::Table-->
+															<div class="table-responsive border-bottom mb-9">
+																<table class="table mb-3">
+																	<thead>
+																		<tr class="border-bottom fs-6 fw-bolder text-muted">
+																			<th class="min-w-175px pb-2">Item</th>
+
+																			<th class="min-w-80px text-end pb-2">Quantity</th>
+																			<th class="min-w-100px text-end pb-2">Unit Measure</th>
+																			<th class="min-w-100px text-end pb-2">Unit Price</th>
+																			<th class="min-w-100px text-end pb-2">Total</th>
+																			<th class="min-w-100px text-end pb-2">Tax Rate</th>
+																		</tr>
+																	</thead>
+																	<tbody>
+																	{% for item in request.goodsDetails %}
+																		<tr class="fw-bolder text-gray-700 fs-5 text-end" >
+
+																			<td class="d-flex align-items-center pt-6">
+																			<i class="fa fa-genderless text-primary fs-2 me-2"></i>{{item['item']}}</td>
+                                                                            <td class="pt-6">{{item['qty']}}</td>
+																			<td class="pt-6">{{item['unitOfMeasure']}}</td>
+																			<td class="pt-6">{{item['unitPrice']}}</td>
+																			<td class="pt-6 text-dark fw-boldest">{{item['total']}}</td>
+																			<td class="pt-6 text-dark fw-boldest">{{item['taxRate']}}</td>
+																		</tr>
+																	{% endfor %}
+<!-- 																		<tr class="fw-bolder text-gray-700 fs-5 text-end"> -->
+<!-- 																			<td class="d-flex align-items-center"> -->
+<!-- 																			<i class="fa fa-genderless text-success fs-2 me-2"></i>Logo Design</td> -->
+<!-- 																			<td>120</td> -->
+<!-- 																			<td>$40.00</td> -->
+<!-- 																			<td class="fs-5 text-dark fw-boldest">$4800.00</td> -->
+<!-- 																		</tr> -->
+<!-- 																		<tr class="fw-bolder text-gray-700 fs-5 text-end"> -->
+<!-- 																			<td class="d-flex align-items-center"> -->
+<!-- 																			<i class="fa fa-genderless text-primary fs-2 me-2"></i>Web Development</td> -->
+<!-- 																			<td>210</td> -->
+<!-- 																			<td>$60.00</td> -->
+<!-- 																			<td class="fs-5 text-dark fw-boldest">$12600.00</td> -->
+<!-- 																		</tr> -->
+																	</tbody>
+																</table>
+															</div>
+															<!--end::Table-->
+															<!--begin:: taxTable-->
+															<!--end::Label-->
+																<h6 class="mb-8 fw-boldest  border-bottom text-gray-600 text-hover-primary">TAX DETAILS</h6>
+																<!--end::Label-->
+															<div class="table-responsive border-bottom mb-9">
+																<table class="table mb-3">
+																	<thead>
+																		<tr class="border-bottom fs-6 fw-bolder text-muted">
+																			<th class="min-w-175px pb-2">Tax Category</th>
+
+																			<th class="min-w-80px text-end pb-2">Net Amount</th>
+																			<th class="min-w-100px text-end pb-2">Tax Amount</th>
+																			<th class="min-w-100px text-end pb-2">Gross Amount</th>
+
+																		</tr>
+																	</thead>
+																	<tbody>
+																	{% for item in request.taxDetails %}
+																		<tr class="fw-bolder text-gray-700 fs-5 text-end" >
+
+																			<td class="d-flex align-items-center pt-6">
+																			<i class="fa fa-genderless text-primary fs-2 me-2"></i>{{item['taxCategory']}}</td>
+                                                                            <td class="pt-6">{{item['netAmount']}}</td>
+																			<td class="pt-6">{{item['taxAmount']}}</td>
+																			<td class="pt-6">{{item['grossAmount']}}</td>
+
+																		</tr>
+
+																	{% endfor %}
+																	</tbody>
+																</table>
+															</div>
+															<!--end::Table-->
+
+															<!--end::Label-->
+																<h6 class="mb-8 fw-boldest  border-bottom text-gray-600 text-hover-primary">SUMMARY</h6>
+															<!--end::Label-->
+															<!--begin::Container-->
+															<div class="d-flex justify-content-end">
+																<!--begin::Section-->
+																<div class="mw-300px">
+																	<!--begin::Item-->
+																	<div class="d-flex flex-stack mb-3">
+																		<!--begin::Accountname-->
+																		<div class="fw-bold pe-10 text-gray-600 fs-7">Net Amount:</div>
+																		<!--end::Accountname-->
+																		<!--begin::Label-->
+																		<div class="text-end fw-bolder fs-6 text-gray-800">{{request.summary['netAmount']}}</div>
+																		<!--end::Label-->
+																	</div>
+																	<!--end::Item-->
+																	<!--begin::Item-->
+																	<div class="d-flex flex-stack mb-3">
+																		<!--begin::Accountname-->
+																		<div class="fw-bold pe-10 text-gray-600 fs-7">Tax Amount </div>
+																		<!--end::Accountname-->
+																		<!--begin::Label-->
+																		<div class="text-end fw-bolder fs-6 text-gray-800">{{request.summary['taxAmount']}}</div>
+																		<!--end::Label-->
+																	</div>
+																	<!--end::Item-->
+																	<!--begin::Item-->
+																	<div class="d-flex flex-stack mb-3">
+																		<!--begin::Accountnumber-->
+																		<div class="fw-bold pe-10 text-gray-600 fs-7">Gross Amount</div>
+																		<!--end::Accountnumber-->
+																		<!--begin::Number-->
+																		<div class="text-end fw-bolder fs-6 text-gray-800">{{request.summary['grossAmount']}}</div>
+																		<!--end::Number-->
+																	</div>
+																	<!--end::Item-->
+																	<!--begin::Item-->
+																	<div class="d-flex flex-stack">
+																		<!--begin::Code-->
+																		<div class="fw-bold pe-10 text-gray-600 fs-7">No of Items</div>
+																		<!--end::Code-->
+																		<!--begin::Label-->
+																		<div class="text-end fw-bolder fs-6 text-gray-800">{{request.summary['itemCount']}}</div>
+																		<!--end::Label-->
+																	</div>
+																	<!--end::Item-->
+																</div>
+																<!--end::Section-->
+
+																<!--end::Label-->
+
+															<!--end::Label-->
+															</div>
+															<!--end::Container-->
+															<h6 class="mb-8 fw-boldest  border-bottom text-gray-600 text-hover-primary"></h6>
+															<!--begin::Row-->
+														<div class="row g-5 mb-11">
+															<!--end::Col-->
+															<div class="col-sm-4">
+																<!--end::Label-->
+																<div class="fw-bold fs-7 text-gray-600 mb-1">Remarks:</div>
+																<!--end::Label-->
+																<!--end::Col-->
+																<div class="fw-bolder fs-7 text-gray-400">{{request.summary['remarks']}}</div>
+																<!--end::Col-->
+															</div>
+															<!--end::Col-->
+															<!--end::Col-->
+															<div class="col-sm-4">
+																<!--end::Label-->
+																<div class="fw-bold fs-7 text-gray-600 mb-1">Payment Mode:</div>
+																<!--end::Label-->
+																<!--end::Col-->
+																{% if request.payWay[0]['paymentMode'] == '101' %}
+																<div class="fw-bolder fs-7 text-gray-600" >Credit</div>
+																{% elif request.payWay[0]['paymentMode'] == '102' %}
+																<div class="fw-bolder fs-7 text-gray-600" >Cash</div>
+																 {% else %}
+																<div class="fw-bolder fs-7 text-gray-600" >Mobile Money</div>
+																{% endif %}
+																<!--end::Col-->
+															</div>
+															<!--end::Col-->
+															<!--end::Col-->
+															<div class="col-sm-4">
+																<img align='center' src="/static/qr_codes/ug/{{request.sellerDetails['tin']}}/{{request.basicInformation['antifakeCode']}}.png"/>
+																<!--end::Col-->
+															</div>
+															<!--end::Col-->
+															</div>
+
+														</div>
+														<!--end::Content-->
+													</div>
+													<!--end::Wrapper-->
+												</div>
+												<!--end::Invoice 2 content-->
+											</div>
+											<!--end::Content-->
+											<!--begin::Sidebar-->
+											<div class="m-0">
+												<!--begin::Invoice 2 sidebar-->
+												<div class="d-print-none border border-dashed border-gray-300 card-rounded h-lg-100 min-w-md-350px p-9 bg-lighten">
+													<!--begin::Labels-->
+													<div class="mb-8">
+														<span class="badge badge-light-success me-2">Approved</span>
+<!-- 														<span class="badge badge-light-warning">Pending Payment</span> -->
+													</div>
+													<!--end::Labels-->
+													<!--begin::Title-->
+													<h6 class="mb-8 fw-boldest text-gray-600 text-hover-primary">URA DETAILS</h6>
+													<!--end::Title-->
+													<!--begin::Item-->
+													<div class="mb-6">
+														<div class="fw-bold text-gray-600 fs-7">Antifake Code:</div>
+														<div class="fw-bolder text-gray-800 fs-6">{{request.basicInformation['antifakeCode']}}</div>
+													</div>
+													<!--end::Item-->
+													<!--begin::Item-->
+													<div class="mb-6">
+														<div class="fw-bold text-gray-600 fs-7">Invoice Id:</div>
+														<div class="fw-bolder text-gray-800 fs-6">{{request.basicInformation['invoiceId']}}</div>
+													</div>
+													<!--end::Item-->
+													<!--begin::Item-->
+													<div class="mb-6">
+														<div class="fw-bold text-gray-600 fs-7">Invoice No:</div>
+														<div class="fw-bolder text-gray-800 fs-6">{{request.basicInformation['invoiceNo']}}</div>
+													</div>
+													<!--end::Item-->
+													<!--begin::Item-->
+													<div class="mb-15">
+														<div class="fw-bold text-gray-600 fs-7">Payment Term:</div>
+														<div class="fw-bolder fs-6 text-gray-800 d-flex align-items-center">30 days
+														<span class="fs-7 text-danger d-flex align-items-center">
+														<span class="bullet bullet-dot bg-danger mx-2"></span>Due in 30 days</span></div>
+													</div>
+													<!--end::Item-->
+													<!--begin::Title-->
+													<h6 class="mb-8 fw-boldest text-gray-600 text-hover-primary">PAYMENT request.summary</h6>
+													<!--end::Title-->
+
+													<!--begin::Item-->
+													<div class="mb-6">
+														<div class="fw-bold text-gray-600 fs-7">Gross Amount:</div>
+														<div class="fw-bolder text-gray-800 fs-6">{{request.summary['grossAmount']}}</div>
+													</div>
+													<!--end::Item-->
+													<!--begin::Item-->
+													<div class="mb-6">
+														<div class="fw-bold text-gray-600 fs-7">Tax Amount:</div>
+														<div class="fw-bolder text-gray-800 fs-6">{{request.summary['taxAmount']}}</div>
+													</div>
+													<!--end::Item-->
+
+													<!--begin::Item-->
+													<div class="mb-6">
+														<div class="fw-bold text-gray-600 fs-7">Item Count:</div>
+														<div class="fw-bolder text-gray-800 fs-6">{{request.summary['itemCount']}}</div>
+													</div>
+													<!--end::Item-->
+
+													<!--begin::Item-->
+													<div class="mb-6">
+														<div class="fw-bold text-gray-600 fs-7">Issuer:</div>
+														<div class="fw-bolder text-gray-800 fs-6">{{request.basicInformation['invoiceNo']}}</div>
+													</div>
+													<!--end::Item-->
+												</div>
+												<!--end::Invoice 2 sidebar-->
+											</div>
+											<!--end::Sidebar-->
+										</div>
+										<!--end::Layout-->
+
+									<!--end::Body-->
+
+								<!--end::Invoice 2 main-->
+
+										<!--end::Body-->
+										<!-- begin::Footer-->
+										<div class="d-flex flex-stack flex-wrap mt-lg-20 pt-13">
+											<!-- begin::Actions-->
+											<div class="my-1 me-5">
+												<!-- begin::Pint-->
+												<button type="button" class="btn btn-success my-1 me-12" onclick="window.print();">Print Invoice</button>
+												<!-- end::Pint-->
+												<!-- begin::Download-->
+<!-- 												<button type="button" class="btn btn-light-success my-1">Download</button> -->
+												<!-- end::Download-->
+											</div>
+											<!-- end::Actions-->
+											<!-- begin::Action-->
+<!-- 											<a href="../../demo2/dist/apps/invoices/create.html" class="btn btn-primary my-1">Create Invoice</a> -->
+											<!-- end::Action-->
+										</div>
+										<!-- end::Footer-->
+
+									<!-- end::Wrapper-->
+								</div>
+								<!-- end::Body-->
+							</div>
+	<!--end::Body-->
+
+
+		<!--begin::Javascript-->
+		<script>var hostUrl = "/static/metronic/demo1/assets/";</script>
+		<!--begin::Global Javascript Bundle(used by all pages)-->
+		<script src="/static/metronic/demo1/assets/plugins/global/plugins.bundle.js"></script>
+		<script src="/static/metronic/demo1/assets/js/scripts.bundle.js"></script>
+		<!--end::Global Javascript Bundle-->
+		<!--begin::Page Vendors Javascript(used by this page)-->
+		<script src="/static/metronic/demo1/assets/plugins/custom/datatables/datatables.bundle.js"></script>
+		<!--end::Page Vendors Javascript-->
+		<!--begin::Page Custom Javascript(used by this page)-->
+		<script src="/static/metronic/demo1/assets/js/widgets.bundle.js"></script>
+		<script src="/static/metronic/demo1/assets/js/custom/widgets.js"></script>
+		<script src="/static/metronic/demo1/assets/js/custom/apps/chat/chat.js"></script>
+		<script src="/static/metronic/demo1/assets/js/custom/utilities/modals/upgrade-plan.js"></script>
+		<script src="/static/metronic/demo1/assets/js/custom/utilities/modals/create-app.js"></script>
+		<script src="/static/metronic/demo1/assets/js/custom/utilities/modals/users-search.js"></script>
+		<!--end::Page Custom Javascript-->
+
+		<!-- PDF Viewer -->
+
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+		<!--end::Javascript-->
+	</body>
+	<!--end::Body-->
+</html>

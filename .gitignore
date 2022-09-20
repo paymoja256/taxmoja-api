@@ -127,3 +127,11 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+backend/.DS_Store
+backend/app/.DS_Store
+backend/app/api/handlers/.DS_Store
+backend/app/api/handlers/UG/.DS_Store
+backend/app/api/handlers/UG/keys/.DS_Store
+backend/app/api/static/.DS_Store
+backend/app/api/static/metronic/.DS_Store
+backend/app/api/static/metronic/demo1/.DS_Store

@@ -1,0 +1,361 @@
+{
+  "UG": {
+    "1000522479": {
+      "api_keys": {
+        "staging": "635f1ee-3493-407d-8ac8-8afd21a88795",
+        "production": "635f1ee-3493-407d-8ac8-8afd21a88795"
+      },
+      "staging": {
+        "tax_pin": "1000522479",
+        "efris_url": "http://192.168.64.14:9880/efristcs/ws/tcsapp/getInformation",
+        "efris_url_online": "https://efristest.ura.go.ug/efrisws/ws/taapp/getInformation",
+        "industry_code": "101",
+        "efris_username": "1000522479",
+        "efris_device_no": "TCSa28758649357136",
+        "efris_tax_payer_id": "1000522479",
+        "app_id": "AP04",
+        "efris_version": "1.1.20191201",
+        "client_name": "Engie Technologies",
+        "client_email": "info@Engie.com",
+        "client_address": "Plot 33b upper naguru east road",
+        "client_mobile": "0706746530",
+        "online_mode": "True",
+        "private_key_password": "paymoja",
+        "invoice_country": "UG",
+        "Description": "Engie Test Environment",
+        "bitrix_api_url2": "https://intranet.fltug.com/rest/73/cbgjtolasfvbmanf/",
+        "bitrix_api_url": "https://b24-iolvdc.bitrix24.com/rest/1/1qdarkrlk5847dzk/",
+        "bitrix_field_properties": {
+          "efris_commodity_category": "PROPERTY_241",
+          "efris_measure_unit": "PROPERTY_243",
+          "efris_purchase_price": "PROPERTY_247",
+          "efris_supplier": "PROPERTY_249",
+          "efris_supplier_tin": "PROPERTY_251",
+          "efris_quantity": "PROPERTY_245",
+          "efris_buyer_type": "B2C",
+          "efris_buyer_tin": ""
+        },
+        "dear_api_url": "https://inventory.dearsystems.com/ExternalApi/v2",
+        "dear_account_id": "9b65f817-b540-4fe9-af46-abd98312c625",
+        "dear_app_key": "a601d7f2-a0cf-2446-d8d8-75bcbe14b98c",
+        "dear_field_properties": {
+          "currency": "AdditionalAttribute5",
+          "measure_unit": "AdditionalAttribute2",
+          "ura_commodity_category": "AdditionalAttribute1",
+          "goods_description": "AdditionalAttribute4"
+        },
+        "xero_api_url": "https://api.xero.com/api.xro/2.0/",
+        "xero_tenant_id": "bc1edbaa-c231-474d-95e5-aebdddb11409",
+        "xero_client_id": "80F96CB2E5FF4958B41C290654C1F52A",
+        "xero_secret": "1UshTSsonqKES1vvkABINBBJ7q5SYmWwYjk6hEdYnWuw5OJ2",
+        "xero_invoice_webhook_key": "Ac6ifdWtnoTB9upZFVJDVBSmLcLUE+lptHF1vqyJJPcmdfV6M948LwTDt+T4IWywjTk5pt0z0aiOqAIWmtdrbw==",
+        "xero_field_properties": {}
+
+      },
+      "production": {
+        "tax_pin": "1000522479",
+        "efris_url": "http://192.168.64.14:9880/efristcs/ws/tcsapp/getInformation",
+        "efris_url_online": "https://efrisws.ura.go.ug/ws/taapp/getInformation",
+        "industry_code": "101",
+        "efris_username": "1000522479",
+        "efris_device_no": "TCSa28758649357136",
+        "efris_tax_payer_id": "1000522479",
+        "app_id": "AP04",
+        "efris_version": "1.1.20191201",
+        "client_name": "Engie Technologies",
+        "client_email": "info@Engie.com",
+        "client_address": "Plot 33b upper naguru east road",
+        "client_mobile": "0706746530",
+        "online_mode": "True",
+        "private_key_password": "paymoja",
+        "invoice_country": "UG",
+        "Description": "Engie Live Environment",
+        "bitrix_api_url": "https://intranet.fltug.com/rest/73/cbgjtolasfvbmanf/",
+        "bitrix_field_properties": {
+          "efris_commodity_category": "PROPERTY_241",
+          "efris_measure_unit": "PROPERTY_243",
+          "efris_purchase_price": "PROPERTY_247",
+          "efris_supplier": "PROPERTY_249",
+          "efris_supplier_tin": "PROPERTY_251",
+          "efris_quantity": "PROPERTY_245",
+          "efris_buyer_type": "",
+          "efris_buyer_tin": ""
+        }
+      },
+      "testing": true
+    },
+    "1005332112": {
+      "api_keys": {
+        "staging": "635f1ee-3493-407d-8ac8-8afd21a88795",
+        "production": "635f1ee-3493-407d-8ac8-8afd21a88795"
+      },
+      "staging": {
+        "tax_pin": "1005332112",
+        "efris_url": "http://192.168.64.14:9880/efristcs/ws/tcsapp/getInformation",
+        "efris_url_online": "https://efristest.ura.go.ug/efrisws/ws/taapp/getInformation",
+        "industry_code": "101",
+        "efris_username": "1005332112",
+        "efris_device_no": "1005332112_01",
+        "efris_tax_payer_id": "1005332112",
+        "app_id": "AP04",
+        "efris_version": "1.1.20191201",
+        "client_name": "Rocket Africa",
+        "client_email": "info@rocketafrica.com",
+        "client_address": "Kololo",
+        "client_mobile": "0706746530",
+        "online_mode": "True",
+        "private_key_password": "rocket",
+        "invoice_country": "UG",
+        "Description": "Rocket Test Environment",
+        "bitrix_api_url2": "https://intranet.fltug.com/rest/73/cbgjtolasfvbmanf/",
+        "bitrix_api_url": "https://b24-iolvdc.bitrix24.com/rest/1/1qdarkrlk5847dzk/",
+        "bitrix_field_properties": {
+          "efris_commodity_category": "PROPERTY_241",
+          "efris_measure_unit": "PROPERTY_243",
+          "efris_purchase_price": "PROPERTY_247",
+          "efris_supplier": "PROPERTY_249",
+          "efris_supplier_tin": "PROPERTY_251",
+          "efris_quantity": "PROPERTY_245",
+          "efris_buyer_type": "B2C",
+          "efris_buyer_tin": ""
+        },
+        "dear_api_url": "https://inventory.dearsystems.com/ExternalApi/v2",
+        "dear_account_id": "9b65f817-b540-4fe9-af46-abd98312c625",
+        "dear_app_key": "a601d7f2-a0cf-2446-d8d8-75bcbe14b98c",
+        "dear_field_properties": {
+          "currency": "AdditionalAttribute5",
+          "measure_unit": "AdditionalAttribute2",
+          "ura_commodity_category": "AdditionalAttribute1",
+          "goods_description": "AdditionalAttribute4"
+        },
+        "xero_api_url": "https://api.xero.com/api.xro/2.0/",
+        "xero_tenant_id": "bc1edbaa-c231-474d-95e5-aebdddb11409",
+        "xero_client_id": "80F96CB2E5FF4958B41C290654C1F52A",
+        "xero_secret": "1UshTSsonqKES1vvkABINBBJ7q5SYmWwYjk6hEdYnWuw5OJ2",
+        "xero_invoice_webhook_key": "Ac6ifdWtnoTB9upZFVJDVBSmLcLUE+lptHF1vqyJJPcmdfV6M948LwTDt+T4IWywjTk5pt0z0aiOqAIWmtdrbw==",
+        "xero_field_properties": {}
+
+      },
+      "production": {
+        "tax_pin": "1005332112",
+        "efris_url": "http://192.168.64.14:9880/efristcs/ws/tcsapp/getInformation",
+        "efris_url_online": "https://efrisws.ura.go.ug/ws/taapp/getInformation",
+        "industry_code": "101",
+        "efris_username": "1005332112",
+        "efris_device_no": "T1005332112_01",
+        "efris_tax_payer_id": "1005332112",
+        "app_id": "AP04",
+        "efris_version": "1.1.20191201",
+        "client_name": "Rocket Africa",
+        "client_email": "info@Engie.com",
+        "client_address": "Plot 33b upper naguru east road",
+        "client_mobile": "0706746530",
+        "online_mode": "True",
+        "private_key_password": "rocket",
+        "invoice_country": "UG",
+        "Description": "Engie Live Environment",
+        "bitrix_api_url": "https://intranet.fltug.com/rest/73/cbgjtolasfvbmanf/",
+        "bitrix_field_properties": {
+          "efris_commodity_category": "PROPERTY_241",
+          "efris_measure_unit": "PROPERTY_243",
+          "efris_purchase_price": "PROPERTY_247",
+          "efris_supplier": "PROPERTY_249",
+          "efris_supplier_tin": "PROPERTY_251",
+          "efris_quantity": "PROPERTY_245",
+          "efris_buyer_type": "",
+          "efris_buyer_tin": ""
+        }
+      },
+      "testing": true
+    },
+    "1015490725": {
+      "api_keys": {
+        "staging": "635f1ee-3493-407d-8ac8-8afd21a88795",
+        "production": "635f1ee-3493-407d-8ac8-8afd21a88795"
+      },
+      "staging": {
+        "tax_pin": "1015490725",
+        "efris_url": "http://192.168.64.14:9880/efristcs/ws/tcsapp/getInformation",
+        "efris_url_online": "https://efristest.ura.go.ug/efrisws/ws/taapp/getInformation",
+        "industry_code": "101",
+        "efris_username": "1015490725",
+        "efris_device_no": "1015490725_01",
+        "efris_tax_payer_id": "1015490725",
+        "app_id": "AP04",
+        "efris_version": "1.1.20191201",
+        "client_name": "Engie Power Corner",
+        "client_email": "joshua.ocero@engie.com",
+        "client_address": "Kololo",
+        "client_mobile": "0706746530",
+        "online_mode": "True",
+        "private_key_password": "8fV!g_>2TDw=-HK&",
+        "invoice_country": "UG",
+        "Description": "Power corner Test Environment"
+      },
+      "production": {
+        "tax_pin": "1015490725",
+        "efris_url": "http://192.168.64.14:9880/efristcs/ws/tcsapp/getInformation",
+        "efris_url_online": "https://efrisws.ura.go.ug/ws/taapp/getInformation",
+        "industry_code": "101",
+        "efris_username": "1015490725",
+        "efris_device_no": "TCSa28758649357136",
+        "efris_tax_payer_id": "1015490725",
+        "app_id": "AP04",
+        "efris_version": "1.1.20191201",
+        "client_name": "Engie Power Corner",
+        "client_email": "joshua.ocero@engie.com",
+        "client_address": "Kololo",
+        "client_mobile": "0706746530",
+        "online_mode": "True",
+        "private_key_password": "8fV!g_>2TDw=-HK&",
+        "invoice_country": "UG",
+        "Description": "Power Corner Live Environment"
+      },
+      "testing": true
+    },
+    "1002611124": {
+      "api_keys": {
+        "staging": "635f1ee-3493-407d-8ac8-8afd21a88795",
+        "production": "635f1ee-3493-407d-8ac8-8afd21a88795"
+      },
+      "staging": {
+        "tax_pin": "1002611124",
+        "efris_url": "http://192.168.64.14:9880/efristcs/ws/tcsapp/getInformation",
+        "efris_url_online": "https://efristest.ura.go.ug/efrisws/ws/taapp/getInformation",
+        "industry_code": "101",
+        "efris_username": "1002611124",
+        "efris_device_no": "1002611124_03",
+        "efris_tax_payer_id": "1002611124",
+        "app_id": "AP04",
+        "efris_version": "1.1.20191201",
+        "client_name": "FENIX INTERNATIONAL UGANDA LIMITED",
+        "client_email": "patricia.kawooya@engie.com",
+        "client_address": "11 Wampewo Ave, Kampala",
+        "client_mobile": "041 4531960",
+        "online_mode": "True",
+        "private_key_password": "Eng13En3rgyAcc3$$",
+        "invoice_country": "UG",
+        "Description": "FENIX Test Environment"
+      },
+      "production": {
+        "tax_pin": "1002611124",
+        "efris_url": "http://192.168.64.14:9880/efristcs/ws/tcsapp/getInformation",
+        "efris_url_online": "https://efrisws.ura.go.ug/ws/taapp/getInformation",
+        "industry_code": "101",
+        "efris_username": "1002611124",
+        "efris_device_no": "1002611124_01",
+        "efris_tax_payer_id": "1002611124",
+        "app_id": "AP04",
+        "efris_version": "1.1.20191201",
+        "client_name": "FENIX INTERNATIONAL UGANDA LIMITED",
+        "client_email": "patricia.kawooya@engie.com",
+        "client_address": "11 Wampewo Ave, Kampala",
+        "client_mobile": "041 4531960",
+        "online_mode": "True",
+        "private_key_password": "Eng13En3rgyAcc3$$",
+        "invoice_country": "UG",
+        "Description": "FENIX Test Environment"
+      },
+      "testing": false
+    },
+    "1000591263": {
+      "api_keys": {
+        "staging": "ahd8grufctkmso6m5qrgqexbi53apuzd",
+        "production": "ahd8grufctkmso6m5qrgqexbi53apuzd"
+      },
+      "staging": {
+        "tax_pin": "1000591263",
+        "efris_url": "http://192.168.64.14:9880/efristcs/ws/tcsapp/getInformation",
+        "efris_url_online": "https://efristest.ura.go.ug/efrisws/ws/taapp/getInformation",
+        "industry_code": "101",
+        "efris_username": "1000591263",
+        "efris_device_no": "TCSb60e302730239923",
+        "efris_tax_payer_id": "1000591263",
+        "app_id": "AP04",
+        "efris_version": "1.1.20191201",
+        "client_name": "Future Link Technologies",
+        "client_email": "info@flt.co.ug",
+        "client_address": "Plot 97 Bukoto St, Kampala",
+        "client_mobile": "0706746530",
+        "online_mode": "True",
+        "private_key": "/Applications/MAMP/htdocs/paymoja efris/fastapi/mita/api/efris/keys/1000591263/key.pfx",
+        "private_key_password": "futurelink",
+        "invoice_country": "UG",
+        "bitrix_api_url": "https://intranet.fltug.com/rest/73/dtj9j92mofqy16kr/",
+        "bitrix_field_properties": {
+          "efris_commodity_category": "PROPERTY_241",
+          "efris_measure_unit": "PROPERTY_243",
+          "efris_purchase_price": "",
+          "efris_supplier": "",
+          "efris_supplier_tin": "",
+          "efris_quantity": ""
+        }
+      },
+      "production": {
+        "tax_pin": "1000591263",
+        "efris_url": "http://192.168.64.14:9880/efristcs/ws/tcsapp/getInformation",
+        "efris_url_online": "https://efristest.ura.go.ug/efrisws/ws/taapp/getInformation",
+        "industry_code": "101",
+        "efris_username": "1000591263",
+        "efris_device_no": "TCSb60e302730239923",
+        "efris_tax_payer_id": "1000591263",
+        "app_id": "AP04",
+        "efris_version": "1.1.20191201",
+        "client_name": "Future Link Technologies",
+        "client_email": "info@flt.co.ug",
+        "client_address": "Plot 97 Bukoto St, Kampala",
+        "client_mobile": "0706746530",
+        "online_mode": "True",
+        "private_key": "/Applications/MAMP/htdocs/paymoja efris/fastapi/mita/api/efris/keys/1000591263/key.pfx",
+        "private_key_password": "futurelink",
+        "invoice_country": "UG",
+        "bitrix_api_url": "https://intranet.fltug.com/rest/73/dtj9j92mofqy16kr/"
+      },
+      "testing": true
+    }
+  },
+  "ZM": {
+    "1004157366": {
+      "api_keys": {
+        "staging": "635f1ee-3493-407d-8ac8-8afd21a88795",
+        "production": "635f1ee-3493-407d-8ac8-8afd21a88795"
+      },
+      "staging": {
+        "software_version": "1.0",
+        "zra_terminal_id": "010100000072",
+        "zra_url": "http://196.223.29.24:8097/iface/index",
+        "zra_tax_pin": "1004157366",
+        "zra_serial_number": "FENIX VEFD",
+        "zra_registration_code": "792412908415",
+        "zra_tax_acc_name": "FENIX INTERNATIONAL ZAMBIA LIMITED-VAT",
+        "zra_private_key": "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBALFzUVz+OLl6vr8T9qGat537gEc1dY7XUXhfiluCcyFDd5z8BGLavu4oiuFS4KEnAgEDjKjWqerDP/5ETV8sFmc+4eN9I4jsfNOw7+NIRW0b/YcGEHFkJvj2UwJTOZS6fQa7dTi3byRJDleOPmp6cFBwMElaLY4E78DMRtNay7wdAgMBAAECgYAostEraecqqztKadK8F9cbNc6jBmDTBRFbcVYzTMUJEQdDCw4aeh8mUkggC7kXXPH5t42wP6OzA1sO/y1bsanlXA7JhSgtLMrrS0FChrp99spYRdDXNQFpnrx685V57ElrMuhF+N2v8yRkCPvnAbZ7hw9EC4fR8CKouy3R0hHIYQJBAOdfYMubNEQ/biVxPF9mzqxmSy0qKXrJXPiNC/KHc0cvk8wZqK+LVyMjzzwHRLxlHF+7e629h+3CI6TC6EwxI0kCQQDEVqCreXk9xkbvtyqHbqjE6cRnIJ0A4CUXkwJzshaFLgSDsZcy3bUNLj8ha9wn64msF+Ucwy4zTdKaE5zZtf41AkBJmE8DtJSFeN+iTUh02BC5Sbhz30teYRqPfN3mASur4vhSHX9IhzvqU4OhhnZYrpi94rbOZtEL0Yrg55ZYVfDxAkEAmFLRElgK7RdQX5hOoYYD38mxe4T86fn8LP78DwCioi6ih/2W3XrOhWxUxDwnML13MRHUyezPgjQlaS5AKVQd5QJAcbvf5OaUPFvAFbs51X05IIMPh7YZXMnyFbB930GFhV9t2H6QNYNKGHlLAQTHg5qOmp3YK8KJo4uYXxtzGsZksg==",
+        "zra_signed_rsa_key": "mmhKtcuNr9zWqP/3hP1rD3Fudat3oPNP39UXtmmlUoJN/vM2o4akWCYQ4/7u8l+2p9vk/G5MLHePyvxZwg/Llt5hBtabyIwh/L4q3IuuD3lfbalLBdxsKWbKpsNfHhyqDj6y105AEvoMFUf1HCA7kMMrbIDg/TZAxOmb+W8QHx8="
+      },
+      "production": {},
+      "testing": true
+    }
+  },
+  "BJ": {
+    "3201810399636": {
+      "api_keys": {
+        "staging": "635f1ee-3493-407d-8ac8-8afd21a88795",
+        "production": "635f1ee-3493-407d-8ac8-8afd21a88795"
+      },
+      "testing": true,
+      "staging": {
+        "sfe_url": "https://developper.impots.bj/sygmef-emcf/",
+        "ifu": "3201810399636",
+        "sfe_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IjMyMDE4MTAzOTk2MzZ8VFMwMTAwMjMwNCIsInJvbGUiOiJUYXhwYXllciIsIm5iZiI6MTY0Mzc5NDQ0MiwiZXhwIjoxNjU5NDMyODQyLCJpYXQiOjE2NDM3OTQ0NDIsImlzcyI6ImltcG90cy5iaiIsImF1ZCI6ImltcG90cy5iaiJ9.hZ0CTo3SVrveZ770_cj40TdNVtgf61nB0S9eQqy9jIU"
+      }
+    },
+    "production": {
+      "sfe_url": "https://sygmef.impots.bj/emcf/api/info",
+      "ifu": "3201810399636",
+      "sfe_token": ""
+    }
+  },
+  "TZ": {},
+  "KN": {},
+  "RW": {}
+}
+
