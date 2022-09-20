@@ -135,3 +135,4 @@ backend/app/api/handlers/UG/keys/.DS_Store
 backend/app/api/static/.DS_Store
 backend/app/api/static/metronic/.DS_Store
 backend/app/api/static/metronic/demo1/.DS_Store
+.DS_Store
