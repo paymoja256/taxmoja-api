@@ -40,7 +40,7 @@ jobs:
         with:
           name: python-app
           path: |
-            . 
+            ./backend/
             !venv/
 
   deploy:
