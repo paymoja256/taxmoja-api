@@ -23,7 +23,7 @@ Padding
 ipython
 
 # db
-mysql-connector-python-rf
+mysql-connector-python
 databases[mysql]
 databases[asyncmy]
 SQLAlchemy
