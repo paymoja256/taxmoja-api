@@ -21,6 +21,7 @@ pypng
 simplejson
 Padding
 ipython
+gunicorn
 
 # db
 mysql-connector-python
