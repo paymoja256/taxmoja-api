@@ -286,7 +286,7 @@
         "online_mode": "True",
         "private_key": "/Applications/MAMP/htdocs/paymoja efris/fastapi/mita/api/efris/keys/1000028946/key.pfx",
         "private_key_password": "mogas",
-        "invoice_country": "UG",
+        "invoice_country": "UG"
       },
       "production": {
         "tax_pin": "1000028946",
@@ -332,7 +332,7 @@
         "online_mode": "True",
         "private_key": "/Applications/MAMP/htdocs/paymoja efris/fastapi/mita/api/efris/keys/1016442416/key.pfx",
         "private_key_password": "reelanalytics",
-        "invoice_country": "UG",
+        "invoice_country": "UG"
       },
       "production": {
         "tax_pin": "1016442416",
@@ -378,7 +378,7 @@
         "online_mode": "True",
         "private_key": "/Applications/MAMP/htdocs/paymoja efris/fastapi/mita/api/efris/keys/1008921533/key.pfx",
         "private_key_password": "bushpig",
-        "invoice_country": "UG",
+        "invoice_country": "UG"
       },
       "production": {
         "tax_pin": "1008921533",
@@ -397,11 +397,11 @@
         "online_mode": "True",
         "private_key": "/Applications/MAMP/htdocs/paymoja efris/fastapi/mita/api/efris/keys/1008921533/key.pfx",
         "private_key_password": "bushpig",
-        "invoice_country": "UG",
+        "invoice_country": "UG"
       },
       "testing": true
     },
-    "1016802997 ": {
+    "1016802997": {
       "api_keys": {
         "staging": "ahd8grufctkmso6m5qrgqexbi53apuzd",
         "production": "ahd8grufctkmso6m5qrgqexbi53apuzd"
@@ -423,7 +423,7 @@
         "online_mode": "True",
         "private_key": "/Applications/MAMP/htdocs/paymoja efris/fastapi/mita/api/efris/keys/1016802997 /key.pfx",
         "private_key_password": "paymoja",
-        "invoice_country": "UG",
+        "invoice_country": "UG"
       },
       "production": {
         "tax_pin": "1016802997 ",
@@ -442,7 +442,7 @@
         "online_mode": "True",
         "private_key": "/Applications/MAMP/htdocs/paymoja efris/fastapi/mita/api/efris/keys/1016802997 /key.pfx",
         "private_key_password": "paymoja",
-        "invoice_country": "UG",
+        "invoice_country": "UG"
       },
       "testing": true
     }
