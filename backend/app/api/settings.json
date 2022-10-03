@@ -238,7 +238,7 @@
         "efris_url_online": "https://efrisws.ura.go.ug/ws/taapp/getInformation",
         "industry_code": "101",
         "efris_username": "1005332112",
-        "efris_device_no": "T1005332112_01",
+        "efris_device_no": "1005332112_01",
         "efris_tax_payer_id": "1005332112",
         "app_id": "AP04",
         "efris_version": "1.1.20191201",
@@ -248,7 +248,7 @@
         "client_mobile": "0706746530",
         "online_mode": "True",
         "private_key_password": "rocket",
-        "invoice_country": "UG",
+        "invoice_country" : "UG",
         "Description": "Engie Live Environment",
         "bitrix_api_url": "https://intranet.fltug.com/rest/73/cbgjtolasfvbmanf/",
         "bitrix_field_properties": {
@@ -262,7 +262,7 @@
           "efris_buyer_tin": ""
         }
       },
-      "testing": true
+      "testing": false
     },
     "1000028946": {
       "api_keys": {
