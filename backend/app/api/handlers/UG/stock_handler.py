@@ -39,6 +39,9 @@ class TaxStockHandler(StockHandler):
     async def send_goods_stock_adjustment(self, db, goods_detail: IncomingGoodsStockAdjustmentSchema):
         await self.client.get_key_signature()
         response = await self.client.goods_stock_in(db,goods_detail)
+        
+        if hasattr(response, 'get'):
+            response = response.get('returnStateInfo', None)
 
         return response
 
