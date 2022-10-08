@@ -12,6 +12,25 @@ router = APIRouter()
 struct_logger = structlog.get_logger(__name__)
 
 
+@router.post("/stock/configuration")
+async def incoming_stock_configuration(stock_configuration: IncomingStockConfigurationSchema,
+                                       background_tasks: BackgroundTasks,
+
+                                       session=Depends(get_database),
+                                       stock_service=Depends(get_tax_service)):
+    try:
+
+        stock_configuration_saved = stock_service.create_stock_configuration(session, stock_configuration)
+
+        message = await stock_service.send_stock_configuration(session, stock_configuration_saved)
+        status_code = "200"
+    except Exception as ex:
+        message = str(ex)
+        status_code = "500"
+       
+    return {"status_code": status_code, "message": message}
+
+
 @router.post("/invoice/issue", name="incoming tax invoices:create-invoice")
 async def incoming_invoice(tax_invoice: TaxInvoiceIncomingSchema,
                            background_tasks: BackgroundTasks,
@@ -76,21 +95,6 @@ async def incoming_stock_adjustment(stock_detail: IncomingGoodsStockAdjustmentSc
     return await stock_service.send_goods_stock_adjustment(session, stock_detail)
 
 
-@router.post("/stock/configuration")
-async def incoming_stock_configuration(stock_configuration: IncomingStockConfigurationSchema,
-                                       background_tasks: BackgroundTasks,
-
-                                       session=Depends(get_database),
-                                       stock_service=Depends(get_tax_service)):
-    try:
-
-        stock_configuration_saved = stock_service.create_stock_configuration(session, stock_configuration)
-
-        message = await stock_service.send_stock_configuration(session, stock_configuration_saved)
-    except Exception as ex:
-        raise HTTPException(status_code=404, detail=str(ex))
-
-    return {"status_code": "200", "message": message}
 
 
 @router.get("/information/{information_request}")
