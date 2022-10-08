@@ -20,15 +20,34 @@ async def incoming_stock_configuration(stock_configuration: IncomingStockConfigu
                                        stock_service=Depends(get_tax_service)):
     try:
 
-        stock_configuration_saved = stock_service.create_stock_configuration(session, stock_configuration)
+        stock_configuration_saved = stock_service.create_stock_configuration(
+            session, stock_configuration)
 
         message = await stock_service.send_stock_configuration(session, stock_configuration_saved)
         status_code = "200"
     except Exception as ex:
         message = str(ex)
         status_code = "500"
-       
+
     return {"status_code": status_code, "message": message}
+
+
+@router.post("/stock/adjustment")
+async def incoming_stock_adjustment(stock_detail: IncomingGoodsStockAdjustmentSchema,
+                                    background_tasks: BackgroundTasks,
+                                    session=Depends(get_database),
+
+                                    stock_service=Depends(get_tax_service)):
+    
+    try:
+        message= await stock_service.send_goods_stock_adjustment(session, stock_detail)
+        status_code = "200"
+    except Exception as ex:
+        message = str(ex)
+        status_code = "500"
+
+    return {"status_code": status_code, "message": message}
+
 
 
 @router.post("/invoice/issue", name="incoming tax invoices:create-invoice")
@@ -39,7 +58,8 @@ async def incoming_invoice(tax_invoice: TaxInvoiceIncomingSchema,
                            ):
     try:
         message = invoice_service
-        tax_invoice_saved = invoice_service.create_outgoing_invoice(session, tax_invoice)
+        tax_invoice_saved = invoice_service.create_outgoing_invoice(
+            session, tax_invoice)
 
         # async def send_new_invoice():
         #     await invoice_service.send_invoice(session, tax_invoice_saved)
@@ -62,8 +82,6 @@ async def cancel_credit_note(tax_invoice: CreditNoteCancelSchema,
 
         message = await invoice_service.cancel_invoice(session, tax_invoice)
 
-
-
     except Exception as ex:
         raise HTTPException(status_code=404, detail=str(ex))
 
@@ -77,8 +95,8 @@ async def query_incoming_invoice(tax_invoice: TaxInvoiceIncomingSchema,
                                  ):
     try:
         message = invoice_service
-        invoice_information = invoice_service.create_outgoing_invoice(session, tax_invoice)
-
+        invoice_information = invoice_service.create_outgoing_invoice(
+            session, tax_invoice)
 
     except Exception as ex:
         raise HTTPException(status_code=404, detail=str(ex))
@@ -86,20 +104,10 @@ async def query_incoming_invoice(tax_invoice: TaxInvoiceIncomingSchema,
     return {"status_code": "200", "message": message}
 
 
-@router.post("/stock/adjustment")
-async def incoming_stock_adjustment(stock_detail: IncomingGoodsStockAdjustmentSchema,
-                                    background_tasks: BackgroundTasks,
-                                    session=Depends(get_database),
-
-                                    stock_service=Depends(get_tax_service)):
-    return await stock_service.send_goods_stock_adjustment(session, stock_detail)
-
-
-
-
 @router.get("/information/{information_request}")
 async def incoming_information_request(information_request: str,
-                                       information_service=Depends(get_tax_service),
+                                       information_service=Depends(
+                                           get_tax_service),
 
                                        ):
     try:
@@ -124,7 +132,8 @@ async def print_invoice(instance_invoice_id: str, session=Depends(get_database),
         struct_logger.info(event="retrieved invoice from database",
                            message=printed_invoice
                            )
-        invoice_data = {**printed_invoice.request_data, **printed_invoice.response_data}
+        invoice_data = {**printed_invoice.request_data,
+                        **printed_invoice.response_data}
 
         from pathlib import Path
 
@@ -132,7 +141,8 @@ async def print_invoice(instance_invoice_id: str, session=Depends(get_database),
 
         from fastapi.templating import Jinja2Templates
 
-        jinja_templates = Jinja2Templates(directory=f'{backend}/app/api/static/templates')
+        jinja_templates = Jinja2Templates(
+            directory=f'{backend}/app/api/static/templates')
 
         invoice_data = change_keys(invoice_data, convert)
 
@@ -141,7 +151,8 @@ async def print_invoice(instance_invoice_id: str, session=Depends(get_database),
                            )
 
         return jinja_templates.TemplateResponse(
-            "/invoices/invoice_template_{}.html".format(x_tax_country_code.lower()),
+            "/invoices/invoice_template_{}.html".format(
+                x_tax_country_code.lower()),
             {"request": invoice_data, "tax_pin": x_tax_id, "instance_invoice_id": printed_invoice.instance_invoice_id})
 
     except Exception as ex:
@@ -165,7 +176,8 @@ async def print_credit_note(instance_invoice_id: str, session=Depends(get_databa
 
         from fastapi.templating import Jinja2Templates
 
-        jinja_templates = Jinja2Templates(directory=f'{backend}/app/api/static/templates')
+        jinja_templates = Jinja2Templates(
+            directory=f'{backend}/app/api/static/templates')
 
         invoice_data = change_keys(invoice_data, convert)
 
@@ -174,7 +186,8 @@ async def print_credit_note(instance_invoice_id: str, session=Depends(get_databa
                            )
 
         return jinja_templates.TemplateResponse(
-            "/invoices/invoice_template_{}.html".format(x_tax_country_code.lower()),
+            "/invoices/invoice_template_{}.html".format(
+                x_tax_country_code.lower()),
             {"request": invoice_data, "tax_pin": x_tax_id, "instance_invoice_id": instance_invoice_id})
 
     except Exception as ex:

@@ -606,10 +606,12 @@ class EFRIS(EfrisBase):
         api_response = await self.efris_request_data(content=encrypted_content, signature=signature)
         struct_logger.info(event="online_mode_request",
                            api_response=api_response)
-        if hasattr(api_response, 'get'):
-            pass
-        else:        
-         api_response = self.decrypt_api_response(api_response)
+        
+        api_response = self.decrypt_api_response(api_response)
+        # if hasattr(api_response, 'get'):
+        #     pass
+        # else:        
+        #  api_response = self.decrypt_api_response(api_response)
         struct_logger.info(event="online_mode_request",
                            decrypted_api_response=api_response, request=data)
         return api_response
