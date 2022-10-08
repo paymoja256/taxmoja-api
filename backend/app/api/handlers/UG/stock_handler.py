@@ -56,13 +56,10 @@ class TaxStockHandler(StockHandler):
         
         is_success = False
         
-        if response==[]:
+       
+        if hasattr(response, 'get'):
             is_success = True
-            response = "Success"
-            
-        else:
-            if hasattr(response, 'get'):
-                response = response.get('returnStateInfo', None)
+            response = response.get('returnStateInfo', None)
                 
         return is_success, response
     
