@@ -19,33 +19,38 @@ from app.db.schemas.stock import IncomingGoodsStockAdjustmentSchema, IncomingSto
 struct_logger = structlog.get_logger(__name__)
 
 BS = 16
-pad = lambda s: s + (BS - len(s) % BS) * chr(BS - len(s) % BS)
-unpad = lambda s: s[0:-ord(s[-1])]
+def pad(s): return s + (BS - len(s) % BS) * chr(BS - len(s) % BS)
+def unpad(s): return s[0:-ord(s[-1])]
 
 
 class EFRIS(EfrisBase):
 
     def __init__(self, settings):
-        struct_logger.info(event='EFRIS', message='API Initialised', settings=settings)
+        struct_logger.info(
+            event='EFRIS', message='API Initialised', settings=settings)
 
         self.settings = settings
 
         if settings['online_mode']:
 
             self.url = settings['efris_url_online']
-            struct_logger.info(event='EFRIS', message='using online mode', url=self.url)
+            struct_logger.info(
+                event='EFRIS', message='using online mode', url=self.url)
         else:
 
             self.url = settings['efris_url']
-            struct_logger.info(event='EFRIS', message='using offline mode', url=self.url)
+            struct_logger.info(
+                event='EFRIS', message='using offline mode', url=self.url)
         self.interface_code = ''
         self.request_message = ''
         self.headers = ''
         self.t_pin = settings['tax_pin']
         self.data = {}
         self.key_table = ''
-        self.data_source = "101"  # efris_client.datasource  # 101:efd 102:cs 103:webService api 104:BS
-        self.industry_code = settings['industry_code']  # 101 General Industry 102 Export; 103 Import; 104
+        # efris_client.datasource  # 101:efd 102:cs 103:webService api 104:BS
+        self.data_source = "101"
+        # 101 General Industry 102 Export; 103 Import; 104
+        self.industry_code = settings['industry_code']
         self.appid = settings['app_id']
         self.version = settings['efris_version']  # efris_client.efris_version
         self.exchange_id = uuid.uuid4().hex
@@ -53,7 +58,8 @@ class EFRIS(EfrisBase):
         self.user_name = settings['efris_username']
         self.device_no = settings['efris_device_no']
         self.tax_payer_id = settings['efris_tax_payer_id']
-        self.private_key = os.path.abspath('app/api/handlers/UG/keys/{}/key.p12'.format(self.tax_payer_id))
+        self.private_key = os.path.abspath(
+            'app/api/handlers/UG/keys/{}/key.p12'.format(self.tax_payer_id))
         self.private_key_password = settings['private_key_password']
         self.public_key = ''
         self.aes_password = ''
@@ -102,9 +108,18 @@ class EFRIS(EfrisBase):
         response = await self.api_request('post', request_data)
         struct_logger.info(event='efris_request_data',
                            message="sending efris api request",
-                           response=response.text
+                           response=response
+
                            )
-        return response.json()
+        try:
+            return response.json()
+        except Exception as e:
+            struct_logger.error(event='efris_request_data',
+                                message="failed to decode response",
+                                response=response,
+                                error=e
+                                )
+            return response
 
     async def get_server_time(self):
         """The EFD time is synchronized with the server time."""
@@ -119,11 +134,16 @@ class EFRIS(EfrisBase):
         """
         self.interface_code = 'T104'
         self.api_response = await self.efris_request_data(content='', signature='')
-        data = json.loads(b64decode(self.api_response['data']['content']))
-        self.aes_password = self.key_decryption(b64decode(data['passowrdDes']))
-        self.signature = data['sign']
-        struct_logger.info(event="get_key_signature", aes_password=self.aes_password, signature=self.signature)
-        return self.aes_password
+        try:
+            data = json.loads(b64decode(self.api_response['data']['content']))
+            self.aes_password = self.key_decryption(b64decode(data['passowrdDes']))
+            self.signature = data['sign']
+            struct_logger.info(event="get_key_signature",
+                            aes_password=self.aes_password, signature=self.signature)
+            return self.aes_password
+        except Exception as ex:
+            
+            return self.api_response
 
     async def normal_invoice_query(self, invoice_no="", device_no="", invoice_type=""):
         """Query all Invoice/Receipt invoice information that can be issued with Credit Note, Cancel Debit Note"""
@@ -164,7 +184,8 @@ class EFRIS(EfrisBase):
                 "remarks": db_good.remarks,
                 "client_id": db_good.client_id
             }
-            struct_logger.info(event="goods_inquiry", db_response=stock_details)
+            struct_logger.info(event="goods_inquiry",
+                               db_response=stock_details)
             return stock_details
 
         self.interface_code = "T127"
@@ -180,7 +201,8 @@ class EFRIS(EfrisBase):
 
         if api_response.get('records', None):
             goods_details = api_response['records'][0]
-            struct_logger.info(event="goods_inquiry", api_response=goods_details, request=data)
+            struct_logger.info(event="goods_inquiry",
+                               api_response=goods_details, request=data)
             # stock_details = {
             #     "goods_name": goods_details["goodsName"],
             #     "goods_code": goods_details["goodsCode"],
@@ -203,14 +225,16 @@ class EFRIS(EfrisBase):
             return goods_details
         else:
             msg = 'Could not get goods details'
-            struct_logger.error(event="goods_inquiry", error=msg, api_response=api_response, request=data)
+            struct_logger.error(event="goods_inquiry", error=msg,
+                                api_response=api_response, request=data)
             return {}
 
     async def get_all_branches(self, db):
         """Get all branches"""
         branch = get_branch_by_client_id(db, self.settings["tax_pin"])
         if branch:
-            struct_logger.info(event="get_all_branches", api_response=branch.branch_id, message="database entry")
+            struct_logger.info(
+                event="get_all_branches", api_response=branch.branch_id, message="database entry")
             return branch.branch_id
 
         self.interface_code = "T138"
@@ -233,7 +257,8 @@ class EFRIS(EfrisBase):
         """Goods Upload: Module used for goods upload"""
         self.interface_code = "T130"
         api_response = await self.online_mode_request(data)
-        struct_logger.info(event="goods_upload", api_response=api_response, request=data)
+        struct_logger.info(event="goods_upload",
+                           api_response=api_response, request=data)
         return api_response
 
     async def goods_stock_in(self, db, goods_detail: IncomingGoodsStockAdjustmentSchema):
@@ -268,7 +293,8 @@ class EFRIS(EfrisBase):
                 ]
             }
             api_response = await self.online_mode_request(data)
-            struct_logger.info(event="goods_stock_in", api_response=api_response, request=data)
+            struct_logger.info(event="goods_stock_in",
+                               api_response=api_response, request=data)
             return api_response
         return {"returnMessage": "Failed to find Goods Configuration"}
 
@@ -296,7 +322,8 @@ class EFRIS(EfrisBase):
         }
 
         api_response = await self.online_mode_request(data)
-        struct_logger.info(event="all_invoice_query", reference_no=reference_no, response=api_response)
+        struct_logger.info(event="all_invoice_query",
+                           reference_no=reference_no, response=api_response)
         return api_response['records'][0]
 
     async def get_invoice_details(self, invoice_number):
@@ -306,7 +333,8 @@ class EFRIS(EfrisBase):
             "invoiceNo": invoice_number
         }
         api_response = await self.online_mode_request(data)
-        struct_logger.info(event="get_invoice_details", api_response=api_response, request=data)
+        struct_logger.info(event="get_invoice_details",
+                           api_response=api_response, request=data)
         return api_response
 
     async def send_invoice(self, data):
@@ -314,14 +342,16 @@ class EFRIS(EfrisBase):
         self.interface_code = 'T109'
         # response = b64decode(api_response['data']['content'])
         api_response = await self.online_mode_request(data)
-        struct_logger.info(event="send_invoice", api_response=api_response, request=data)
+        struct_logger.info(event="efris_send_invoice",
+                           api_response=api_response)
         return api_response
 
     async def credit_note_upload(self, data):
         """Credit note upload"""
         self.interface_code = 'T110'
         api_response = await self.online_mode_request(data)
-        struct_logger.info(event="credit_note_upload", api_response=api_response, request=data)
+        struct_logger.info(event="credit_note_upload",
+                           api_response=api_response, request=data)
         return api_response
 
     async def credit_debit_query(self):
@@ -341,21 +371,24 @@ class EFRIS(EfrisBase):
             "pageSize": "20"
         }
         api_response = await self.online_mode_request(data)
-        struct_logger.info(event="credit_debit_query", api_response=api_response, request=data)
+        struct_logger.info(event="credit_debit_query",
+                           api_response=api_response, request=data)
         return api_response
 
     async def credit_note_status(self, data):
         """credit application details"""
         self.interface_code = 'T112'
         api_response = await self.online_mode_request(data)
-        struct_logger.info(event="credit_note_status", api_response=api_response, request=data)
+        struct_logger.info(event="credit_note_status",
+                           api_response=api_response, request=data)
         return api_response
 
     async def credit_note_approval(self, data):
         """credit application approval"""
         self.interface_code = 'T113'
         api_response = await self.online_mode_request(data)
-        struct_logger.info(event="credit_note_approval", api_response=api_response, request=data)
+        struct_logger.info(event="credit_note_approval",
+                           api_response=api_response, request=data)
         return api_response
 
     async def credit_note_cancellation(self, original_invoice_id, invoice_number, reason_code='101',
@@ -370,7 +403,8 @@ class EFRIS(EfrisBase):
             "invoiceApplyCategoryCode": invoice_category_code
         }
         api_response = await self.online_mode_request(data)
-        struct_logger.info(event="credit_note_cancellation", api_response=api_response, request=data)
+        struct_logger.info(event="credit_note_cancellation",
+                           api_response=api_response, request=data)
         return api_response
 
     async def update_efris_dictionary(self):
@@ -378,28 +412,32 @@ class EFRIS(EfrisBase):
 
         self.interface_code = 'T115'
         api_response = await self.online_mode_request_unzip(self.data)
-        struct_logger.info(event="update_efris_dictionary", api_response=api_response, request=self.data)
+        struct_logger.info(event="update_efris_dictionary",
+                           api_response=api_response, request=self.data)
         return api_response
 
     async def z_report_upload(self):
         """Z-report Daily Upload"""
         self.interface_code = 'T116'
         api_response = await self.online_mode_request(self.data)
-        struct_logger.info(event="z_report_upload", api_response=api_response, request=self.data)
+        struct_logger.info(event="z_report_upload",
+                           api_response=api_response, request=self.data)
         return api_response
 
     async def invoice_check(self, data):
         """Contrast client invoice with server invoice consistent"""
         self.interface_code = 'T117'
         api_response = await self.online_mode_request(data)
-        struct_logger.info(event="invoice_check", api_response=api_response, request=data)
+        struct_logger.info(event="invoice_check",
+                           api_response=api_response, request=data)
         return api_response
 
     async def query_credit_note(self, data):
         """Query Credit Note and Cancel Debit Note to apply for details"""
         self.interface_code = 'T118'
         api_response = await self.online_mode_request(data)
-        struct_logger.info(event="query_credit_note", api_response=api_response, request=data)
+        struct_logger.info(event="query_credit_note",
+                           api_response=api_response, request=data)
         return api_response
 
     async def query_tax_payer(self, tin=None, nin=None):
@@ -407,7 +445,8 @@ class EFRIS(EfrisBase):
         self.interface_code = 'T119'
         self.data = {"tin": tin, "ninBrn": nin}
         api_response = await self.online_mode_request(self.data)
-        struct_logger.info(event="query_tax_payer", api_response=api_response, request=self.data)
+        struct_logger.info(event="query_tax_payer",
+                           api_response=api_response, request=self.data)
         return api_response
 
     async def void_credit_note(self, bus_key, ref_no):
@@ -417,7 +456,8 @@ class EFRIS(EfrisBase):
             "businessKey": bus_key, "referenceNo": ref_no
         }
         api_response = await self.online_mode_request(self.data)
-        struct_logger.info(event="void_credit_note", api_response=api_response, request=self.data)
+        struct_logger.info(event="void_credit_note",
+                           api_response=api_response, request=self.data)
         return api_response
 
     async def get_exchange_rate(self, currency):
@@ -427,7 +467,8 @@ class EFRIS(EfrisBase):
             "currency": currency
         }
         api_response = await self.online_mode_request(self.data)
-        struct_logger.info(event="get_exchange_rate", api_response=api_response, request=self.data)
+        struct_logger.info(event="get_exchange_rate",
+                           api_response=api_response, request=self.data)
         return api_response
 
     async def query_cancellation_credit_note(self, invoice_number):
@@ -437,7 +478,8 @@ class EFRIS(EfrisBase):
             "invoiceNo": invoice_number
         }
         api_response = await self.online_mode_request(self.data)
-        struct_logger.info(event="query_cancellation_credit_note", api_response=api_response, request=self.data)
+        struct_logger.info(event="query_cancellation_credit_note",
+                           api_response=api_response, request=self.data)
         return api_response
 
     async def query_commodity_category(self):
@@ -446,21 +488,24 @@ class EFRIS(EfrisBase):
                      "pageSize": "100"
                      }
         api_response = await self.online_mode_request(self.data)
-        struct_logger.info(event="query_commodity_category", api_response=api_response, request=self.data)
+        struct_logger.info(event="query_commodity_category",
+                           api_response=api_response, request=self.data)
         return api_response
 
     async def query_excise_duty(self):
         """Query Excise Duty"""
         self.interface_code = "T125"
         api_response = await self.online_mode_request(self.data)
-        struct_logger.info(event="query_excise_duty", api_response=api_response, request=self.data)
+        struct_logger.info(event="query_excise_duty",
+                           api_response=api_response, request=self.data)
         return api_response
 
     async def get_all_exchange_rates(self):
         """get all exchange rates"""
         self.interface_code = "T126"
         api_response = await self.online_mode_request(self.data)
-        struct_logger.info(event="get_all_exchange_rates", api_response=api_response, request=self.data)
+        struct_logger.info(event="get_all_exchange_rates",
+                           api_response=api_response, request=self.data)
         return api_response
 
     async def stock_quantity_by_goods_id(self, goods_code=""):
@@ -472,14 +517,16 @@ class EFRIS(EfrisBase):
             "branchId": ""
         }
         api_response = await self.online_mode_request(self.data)
-        struct_logger.info(event="stock_quantity_by_goods_id", api_response=api_response, request=self.data)
+        struct_logger.info(event="stock_quantity_by_goods_id",
+                           api_response=api_response, request=self.data)
         return api_response
 
     async def batch_invoice_upload(self, data):
         """Batch Invoice Upload"""
         self.interface_code = "T129"
         api_response = await self.online_mode_request(data)
-        struct_logger.info(event="batch_invoice_upload", api_response=api_response, request=data)
+        struct_logger.info(event="batch_invoice_upload",
+                           api_response=api_response, request=data)
         return api_response
 
     async def upload_exception_log(self, code, desc, error, time):
@@ -490,7 +537,8 @@ class EFRIS(EfrisBase):
             "errorDetail": error, "interruptionTime": time
         }]
         api_response = await self.online_mode_request(self.data)
-        struct_logger.info(event="upload_exception_log", api_response=api_response, request=self.data)
+        struct_logger.info(event="upload_exception_log",
+                           api_response=api_response, request=self.data)
         return api_response
 
     async def upgrade_system_file_download(self, version, os_type):
@@ -503,21 +551,24 @@ class EFRIS(EfrisBase):
             "osType": os_type
         }
         api_response = await self.online_mode_request(self.data)
-        struct_logger.info(event="upgrade_system_file_download", api_response=api_response, request=self.data)
+        struct_logger.info(event="upgrade_system_file_download",
+                           api_response=api_response, request=self.data)
         return api_response
 
     async def commodity_category_incremental_update(self, data):
         """Returns only the commodity category changes since the local version up to current version."""
         self.interface_code = "T134"
         api_response = await self.online_mode_request(data)
-        struct_logger.info(event="commodity_category_incremental_update", api_response=api_response, request=data)
+        struct_logger.info(event="commodity_category_incremental_update",
+                           api_response=api_response, request=data)
         return api_response
 
     async def get_tcs_latest_version(self):
         """Get Tcs Latest Version"""
         self.interface_code = "T135"
         api_response = await self.online_mode_request(self.data)
-        struct_logger.info(event="get_tcs_latest_version", api_response=api_response, request=self.data)
+        struct_logger.info(event="get_tcs_latest_version",
+                           api_response=api_response, request=self.data)
         return api_response
 
     async def public_key_certificate_upload(self, filename, verify_str, file_content):
@@ -529,29 +580,38 @@ class EFRIS(EfrisBase):
             "fileContent": file_content
         }
         api_response = await self.online_mode_request(self.data)
-        struct_logger.info(event="public_key_certificate_upload", api_response=api_response, request=self.data)
+        struct_logger.info(event="public_key_certificate_upload",
+                           api_response=api_response, request=self.data)
         return api_response
 
     async def check_exempt_taxpayer(self, data):
         """Check whether the taxpayer is tax exempt/Deemed"""
         self.interface_code = "T137"
         api_response = await self.online_mode_request(data)
-        struct_logger.info(event="check_exempt_taxpayer", api_response=api_response, request=data)
+        struct_logger.info(event="check_exempt_taxpayer",
+                           api_response=api_response, request=data)
         return api_response
 
     async def goods_stock_transfer(self, data):
         """Stock Transfer"""
         self.interface_code = "T139"
         api_response = await self.online_mode_request(data)
-        struct_logger.info(event="goods_stock_transfer", api_response=api_response, request=data)
+        struct_logger.info(event="goods_stock_transfer",
+                           api_response=api_response, request=data)
         return api_response
 
     async def online_mode_request(self, data):
         encrypted_content = self.aes_encryption(json.dumps(data))
         signature = self.sign_data(encrypted_content)
         api_response = await self.efris_request_data(content=encrypted_content, signature=signature)
-        api_response = self.decrypt_api_response(api_response)
-        struct_logger.info(event="online_mode_request", api_response=api_response, request=data)
+        struct_logger.info(event="online_mode_request",
+                           api_response=api_response)
+        if hasattr(api_response, 'get'):
+            pass
+        else:        
+         api_response = self.decrypt_api_response(api_response)
+        struct_logger.info(event="online_mode_request",
+                           decrypted_api_response=api_response, request=data)
         return api_response
 
     async def online_mode_request_unzip(self, data):
@@ -560,7 +620,8 @@ class EFRIS(EfrisBase):
         signature = self.sign_data(encrypted_content)
         api_response = await self.efris_request_data(content=encrypted_content, signature=signature)
         api_response = b64decode(api_response['data']['content'].encode())
-        struct_logger.info(event=" online_mode_request_unzip", api_response=type(api_response))
+        struct_logger.info(event=" online_mode_request_unzip",
+                           api_response=type(api_response))
         # return api_response
 
     def decrypt_api_response(self, api_response):

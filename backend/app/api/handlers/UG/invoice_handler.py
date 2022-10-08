@@ -532,45 +532,29 @@ class TaxInvoiceHandler(InvoiceHandler):
         return self.invoice_data
 
     def convert_response(self, response):
+        is_success =False
+        
         try:
-            basicInformation = response.get('basicInformation', None)
-            if basicInformation:
-                self.invoice_id = basicInformation['invoiceId']
-                self.invoice_number = basicInformation['invoiceNo']
-                self.anti_fake_code = basicInformation['antifakeCode']
-                self.qr_code = response['summary']['qrCode']
-                self.upload_code = '200'
-                self.upload_desc = 'SUCCESS'
-                self.generate_qr_code(self.qr_code, 'UG', self.client.t_pin, self.anti_fake_code)
-                struct_logger.info(event='processing UG invoice',
-                                   invoice=str(self.invoice_id),
-                                   upload_code=self.upload_code,
-                                   upload_desc=self.upload_desc,
-                                   response=self.response_data
-                                   )
-                return True, response
-            else:
-                response_info = response.get('returnStateInfo', None)
-                if response_info.get('returnMessage', None):
-                    self.upload_code = response_info['returnCode']
-                    self.upload_desc = response_info['returnMessage']
-                    struct_logger.error(event='processing UG invoice',
-                                        response=response,
-                                        upload_code=self.upload_code,
-                                        upload_desc=self.upload_desc,
-
-                                        msg='uploading UG invoice failed...',
-                                        invoice=str(self.invoice_data["invoice_code"])
-                                        )
-
-                    return False, response
-            # Couldn't get response info
-            struct_logger.error(event='processing UG invoice',
-                                response=response,
-                                msg='uploading UG invoice failed...',
-                                invoice=str(self.invoice_data["invoice_code"])
-                                )
-            return False, response
+            if hasattr(response, 'get'):
+                basicInformation = response.get('basicInformation', None)
+                if basicInformation:
+                    self.invoice_id = basicInformation['invoiceId']
+                    self.invoice_number = basicInformation['invoiceNo']
+                    self.anti_fake_code = basicInformation['antifakeCode']
+                    self.qr_code = response['summary']['qrCode']
+                    self.upload_code = '200'
+                    self.upload_desc = 'SUCCESS'
+                    self.generate_qr_code(self.qr_code, 'UG', self.client.t_pin, self.anti_fake_code)
+                    struct_logger.info(event='processing UG invoice',
+                                    invoice=str(self.invoice_id),
+                                    upload_code=self.upload_code,
+                                    upload_desc=self.upload_desc,
+                                    response=self.response_data
+                                    )
+                    
+                    is_success = True
+                
+            
         except Exception as ex:
 
             struct_logger.error(event='processing UG invoice',
@@ -579,7 +563,7 @@ class TaxInvoiceHandler(InvoiceHandler):
                                 msg='uploading UG invoice failed...',
                                 )
 
-            return False, response
+        return is_success, response
 
     def validate_buyer_details(self):
 

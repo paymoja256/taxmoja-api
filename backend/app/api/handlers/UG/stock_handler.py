@@ -50,9 +50,11 @@ class TaxStockHandler(StockHandler):
         return await self.client.goods_upload(request_data)
 
     def convert_response(self, response):
-        if response == []:
-            return True, "success"
-
-        else:
-
-            return False, response
+        
+        is_success = False
+        
+        if hasattr(response, 'get'):
+            response = response.get('returnStateInfo', None)
+            if response['returnCode'] == '00':
+                is_success = True
+        return is_success, response

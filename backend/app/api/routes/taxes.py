@@ -22,11 +22,11 @@ async def incoming_invoice(tax_invoice: TaxInvoiceIncomingSchema,
         message = invoice_service
         tax_invoice_saved = invoice_service.create_outgoing_invoice(session, tax_invoice)
 
-        async def send_new_invoice():
-            await invoice_service.send_invoice(session, tax_invoice_saved)
+        # async def send_new_invoice():
+        #     await invoice_service.send_invoice(session, tax_invoice_saved)
 
-        background_tasks.add_task(send_new_invoice)
-        message = "Invoice sent for processing"
+        # background_tasks.add_task(send_new_invoice)
+        message = await invoice_service.send_invoice(session, tax_invoice_saved)
     except Exception as ex:
         raise HTTPException(status_code=404, detail=str(ex))
 
@@ -86,11 +86,7 @@ async def incoming_stock_configuration(stock_configuration: IncomingStockConfigu
 
         stock_configuration_saved = stock_service.create_stock_configuration(session, stock_configuration)
 
-        async def send_new_stock_configuration():
-            await stock_service.send_stock_configuration(session, stock_configuration_saved)
-
-        background_tasks.add_task(send_new_stock_configuration)
-        message = "Stock Configuration send for processing"
+        message = await stock_service.send_stock_configuration(session, stock_configuration_saved)
     except Exception as ex:
         raise HTTPException(status_code=404, detail=str(ex))
 

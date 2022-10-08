@@ -266,8 +266,8 @@
     },
     "1000028946": {
       "api_keys": {
-        "staging": "ahd8grufctkmso6m5qrgqexbi53apuzd",
-        "production": "ahd8grufctkmso6m5qrgqexbi53apuzd"
+        "staging": "635f1ee-3493-407d-8ac8-8afd21a88795",
+        "production": "635f1ee-3493-407d-8ac8-8afd21a88795"
       },
       "staging": {
         "tax_pin": "1000028946",
@@ -312,8 +312,8 @@
     },
     "1016442416": {
       "api_keys": {
-        "staging": "ahd8grufctkmso6m5qrgqexbi53apuzd",
-        "production": "ahd8grufctkmso6m5qrgqexbi53apuzd"
+        "staging": "635f1ee-3493-407d-8ac8-8afd21a88795",
+        "production": "635f1ee-3493-407d-8ac8-8afd21a88795"
       },
       "staging": {
         "tax_pin": "1016442416",
@@ -321,14 +321,14 @@
         "efris_url_online": "https://efristest.ura.go.ug/efrisws/ws/taapp/getInformation",
         "industry_code": "101",
         "efris_username": "1016442416",
-        "efris_device_no": "TCSb60e302730239923",
+        "efris_device_no": "1016442416_01",
         "efris_tax_payer_id": "1016442416",
         "app_id": "AP04",
         "efris_version": "1.1.20191201",
         "client_name": "Reelanalytics Uganda",
         "client_email": "columba.mwandembe@reelanalytics.net",
         "client_address": "1st Floor Expanding Social Protection Building, Plot 9 Lourdel Road, Nakasero Kampala Uganda",
-        "client_mobile": "+256 706 730 746",
+        "client_mobile": "+256706730746",
         "online_mode": "True",
         "private_key": "/Applications/MAMP/htdocs/paymoja efris/fastapi/mita/api/efris/keys/1016442416/key.pfx",
         "private_key_password": "reelanalytics",
@@ -340,7 +340,7 @@
         "efris_url_online": "https://efristest.ura.go.ug/efrisws/ws/taapp/getInformation",
         "industry_code": "101",
         "efris_username": "1016442416",
-        "efris_device_no": "TCSb60e302730239923",
+        "efris_device_no": "1016442416_01",
         "efris_tax_payer_id": "1016442416",
         "app_id": "AP04",
         "efris_version": "1.1.20191201",
@@ -358,8 +358,8 @@
     },
     "1008921533": {
       "api_keys": {
-        "staging": "ahd8grufctkmso6m5qrgqexbi53apuzd",
-        "production": "ahd8grufctkmso6m5qrgqexbi53apuzd"
+        "staging": "635f1ee-3493-407d-8ac8-8afd21a88795",
+        "production": "635f1ee-3493-407d-8ac8-8afd21a88795"
       },
       "staging": {
         "tax_pin": "1008921533",
@@ -403,17 +403,17 @@
     },
     "1016802997": {
       "api_keys": {
-        "staging": "ahd8grufctkmso6m5qrgqexbi53apuzd",
-        "production": "ahd8grufctkmso6m5qrgqexbi53apuzd"
+        "staging": "635f1ee-3493-407d-8ac8-8afd21a88795",
+        "production": "635f1ee-3493-407d-8ac8-8afd21a88795"
       },
       "staging": {
-        "tax_pin": "1016802997 ",
+        "tax_pin": "1016802997",
         "efris_url": "http://192.168.64.14:9880/efristcs/ws/tcsapp/getInformation",
         "efris_url_online": "https://efristest.ura.go.ug/efrisws/ws/taapp/getInformation",
         "industry_code": "101",
-        "efris_username": "1016802997 ",
-        "efris_device_no": "TCSb60e302730239923",
-        "efris_tax_payer_id": "1016802997 ",
+        "efris_username": "1016802997",
+        "efris_device_no": "1016802997_01",
+        "efris_tax_payer_id": "1016802997",
         "app_id": "AP04",
         "efris_version": "1.1.20191201",
         "client_name": "Pay-moja Limited",
@@ -430,9 +430,9 @@
         "efris_url": "http://192.168.64.14:9880/efristcs/ws/tcsapp/getInformation",
         "efris_url_online": "https://efristest.ura.go.ug/efrisws/ws/taapp/getInformation",
         "industry_code": "101",
-        "efris_username": "1016802997 ",
-        "efris_device_no": "TCSb60e302730239923",
-        "efris_tax_payer_id": "1016802997 ",
+        "efris_username": "1016802997",
+        "efris_device_no": "1016802997_01",
+        "efris_tax_payer_id": "1016802997",
         "app_id": "AP04",
         "efris_version": "1.1.20191201",
         "client_name": "Pay-moja Limited",

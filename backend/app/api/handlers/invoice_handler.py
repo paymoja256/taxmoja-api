@@ -79,19 +79,18 @@ class InvoiceHandler:
         else:
             request_data = invoice.request_data
 
-        result = await self._send_invoice(request_data)
+        api_response = await self._send_invoice(request_data)
 
         struct_logger.info(event='Invoice handler',
                            message="Invoice Sent to API",
-                           result=result
+                           response=api_response
                            )
-        success, response_data = self.convert_response(result)
+        success, response_data = self.convert_response(api_response)
 
         struct_logger.info(event='Invoice handler',
                            message="sending invoice upload request",
-                           request=response_data,
                            status=success,
-                           response=response_data
+                           response=api_response
                            )
 
         invoice.status = InvoiceStatuses.SENT if success else InvoiceStatuses.ERROR

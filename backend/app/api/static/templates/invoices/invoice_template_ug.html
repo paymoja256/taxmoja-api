@@ -150,6 +150,7 @@ License: For each use you must have a valid license purchased only from above li
 															</div>
 															<!--end::Col-->
 															<!--end::Col-->
+															{% if request.basicInformation['invoiceType'] == '1' %}
 															<div class="col-sm-4">
 																<!--end::Label-->
 																<div class="fw-bold fs-7 text-gray-600 mb-1">URA Information:</div>
@@ -166,9 +167,31 @@ License: For each use you must have a valid license purchased only from above li
 																<!--end::Description-->
 																<div class="fw-bold fs-7 text-gray-600"><span class="fw-bold fs-7 text-gray-800"> Currency: </span> {{request.basicInformation['currency']}}</div>
 																<!--end::Description-->
-
-
 															</div>
+																{% else %}
+
+																<div class="col-sm-4">
+																	<!--end::Label-->
+																	<div class="fw-bold fs-7 text-gray-600 mb-1">URA Information:</div>
+																	<!--end::Label-->
+																	<!--end::Text-->
+																	<div class="fw-bold fs-7 text-gray-600"><span class="fw-bold fs-7 text-gray-800">Credit Note No: </span> {{request.basicInformation['invoiceNo']}}</div>
+																	<!--end::Text-->
+																	<!--end::Description-->
+																	<div class="fw-bold fs-7 text-gray-600"><span class="fw-bold fs-7 text-gray-800">Verification Code: </span> {{request.basicInformation['antifakeCode']}}</div>
+																	<!--end::Description-->
+																	<!--end::Description-->
+																	<div class="fw-bold fs-7 text-gray-600"><span class="fw-bold fs-7 text-gray-800"> Invoice Id: </span> {{request.basicInformation['invoiceId']}}</div>
+																	<!--end::Description-->
+																	<!--end::Description-->
+																	<div class="fw-bold fs-7 text-gray-600"><span class="fw-bold fs-7 text-gray-800"> Currency: </span> {{request.basicInformation['currency']}}</div>
+																	<!--end::Description-->
+																</div>
+
+																{% endif %}
+
+
+															
 															<!--end::Col-->
 														</div>
 														<!--end::Row-->
