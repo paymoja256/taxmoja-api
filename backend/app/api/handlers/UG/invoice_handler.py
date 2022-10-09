@@ -86,7 +86,8 @@ class TaxInvoiceHandler(InvoiceHandler):
                 quantity = taxable_item.quantity
                 sale_price = taxable_item.sale_price
                 tax_detail = await self.client.goods_inquiry(db, goods_code)
-                struct_logger.info(event="post_normal_invoice", tax_detail=tax_detail)
+                struct_logger.info(
+                    event="post_normal_invoice", tax_detail=tax_detail)
                 if tax_detail:
                     unit_price = sale_price
                     total = float(unit_price) * float(quantity)
@@ -98,7 +99,8 @@ class TaxInvoiceHandler(InvoiceHandler):
                     self.total_net_amount = self.total_net_amount + net_amount
                     tax_amount = float(net_amount) * float(self.tax_value)
                     self.total_taxable_amount = self.total_taxable_amount + tax_amount
-                    self.total_gross_amount = self.total_gross_amount + float(total)
+                    self.total_gross_amount = self.total_gross_amount + \
+                        float(total)
                     goods_detail = {
                         "item": tax_detail["goodsName"],
                         "itemCode": tax_detail["goodsCode"],
@@ -152,7 +154,7 @@ class TaxInvoiceHandler(InvoiceHandler):
                                         message='item tax details not successfully retrieved from UG')
                     raise HTTPException(status_code=404, detail="Unable to create request data in Efris api for "
                                                                 "invoice {}".format(
-                        self.tax_invoice.instance_invoice_id))
+                                                                    self.tax_invoice.instance_invoice_id))
 
             self.transaction_summary = {
                 "netAmount": "{:.2f}".format(self.total_net_amount),
@@ -209,7 +211,8 @@ class TaxInvoiceHandler(InvoiceHandler):
                 quantity = taxable_item.quantity
                 sale_price = taxable_item.sale_price
                 tax_detail = await self.client.goods_inquiry(db, goods_code)
-                struct_logger.info(event="post_credit_note", tax_detail=tax_detail)
+                struct_logger.info(event="post_credit_note",
+                                   tax_detail=tax_detail)
                 if tax_detail:
                     unit_price = sale_price
                     total = float(unit_price) * float(quantity)
@@ -221,7 +224,8 @@ class TaxInvoiceHandler(InvoiceHandler):
                     self.total_net_amount = self.total_net_amount + net_amount
                     tax_amount = float(net_amount) * float(self.tax_value)
                     self.total_taxable_amount = self.total_taxable_amount + tax_amount
-                    self.total_gross_amount = self.total_gross_amount + float(total)
+                    self.total_gross_amount = self.total_gross_amount + \
+                        float(total)
                     goods_detail = {
                         "item": tax_detail["goodsName"],
                         "itemCode": tax_detail["goodsCode"],
@@ -275,7 +279,7 @@ class TaxInvoiceHandler(InvoiceHandler):
                                         message='item tax details not successfully retrieved from UG')
                     raise HTTPException(status_code=404, detail="Unable to create request data in Efris api for "
                                                                 "invoice {}".format(
-                        self.tax_invoice.instance_invoice_id))
+                                                                    self.tax_invoice.instance_invoice_id))
 
             self.transaction_summary = {
                 "netAmount": "-" + "{:.2f}".format(self.total_net_amount),
@@ -290,7 +294,6 @@ class TaxInvoiceHandler(InvoiceHandler):
             request_data = self.create_credit_note_json_data()
 
             return request_data
-
 
         except Exception as ex:
             struct_logger.error(event='post_credit note',
@@ -497,9 +500,44 @@ class TaxInvoiceHandler(InvoiceHandler):
         return self.json_data
 
     def _send_invoice(self, request_data):
+      
         if self.original_invoice_id:
             return self.client.credit_note_upload(request_data)
         return self.client.send_invoice(request_data)
+
+    def convert_response(self, response):
+        is_success = False
+
+        try:
+            if hasattr(response, 'get'):
+                basicInformation = response.get('basicInformation', None)
+                if basicInformation:
+                    self.invoice_id = basicInformation['invoiceId']
+                    self.invoice_number = basicInformation['invoiceNo']
+                    self.anti_fake_code = basicInformation['antifakeCode']
+                    self.qr_code = response['summary']['qrCode']
+                    self.upload_code = '200'
+                    self.upload_desc = 'SUCCESS'
+                    self.generate_qr_code(
+                        self.qr_code, 'UG', self.client.t_pin, self.anti_fake_code)
+                    struct_logger.info(event='processing UG invoice',
+                                       invoice=str(self.invoice_id),
+                                       upload_code=self.upload_code,
+                                       upload_desc=self.upload_desc,
+                                       response=self.response_data
+                                       )
+
+                    is_success = True
+
+        except Exception as ex:
+
+            struct_logger.error(event='processing UG invoice',
+                                response=response,
+                                error=ex,
+                                msg='uploading UG invoice failed...',
+                                )
+
+        return is_success, response
 
     async def cancel_invoice(self, tax_invoice: CreditNoteCancelSchema):
 
@@ -527,43 +565,10 @@ class TaxInvoiceHandler(InvoiceHandler):
             anti_fake_code = basicInformation['antifakeCode']
             qr_code = self.invoice_data['summary']['qrCode']
 
-            self.generate_qr_code(qr_code, country_code, tax_id, anti_fake_code)
+            self.generate_qr_code(qr_code, country_code,
+                                  tax_id, anti_fake_code)
 
         return self.invoice_data
-
-    def convert_response(self, response):
-        is_success =False
-        
-        try:
-            if hasattr(response, 'get'):
-                basicInformation = response.get('basicInformation', None)
-                if basicInformation:
-                    self.invoice_id = basicInformation['invoiceId']
-                    self.invoice_number = basicInformation['invoiceNo']
-                    self.anti_fake_code = basicInformation['antifakeCode']
-                    self.qr_code = response['summary']['qrCode']
-                    self.upload_code = '200'
-                    self.upload_desc = 'SUCCESS'
-                    self.generate_qr_code(self.qr_code, 'UG', self.client.t_pin, self.anti_fake_code)
-                    struct_logger.info(event='processing UG invoice',
-                                    invoice=str(self.invoice_id),
-                                    upload_code=self.upload_code,
-                                    upload_desc=self.upload_desc,
-                                    response=self.response_data
-                                    )
-                    
-                    is_success = True
-                
-            
-        except Exception as ex:
-
-            struct_logger.error(event='processing UG invoice',
-                                response=response,
-                                error=ex,
-                                msg='uploading UG invoice failed...',
-                                )
-
-        return is_success, response
 
     def validate_buyer_details(self):
 

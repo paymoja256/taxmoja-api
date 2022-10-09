@@ -23,7 +23,8 @@ def create_outgoing_invoice(session: sessionmaker,
     try:
 
         invoice_exists = get_invoice(session, invoice.instance_invoice_id, country_code, tax_id)
-
+        
+        
         if not invoice_exists:
             new_invoice_details = {
                 "request_data": invoice.json(),
@@ -36,9 +37,10 @@ def create_outgoing_invoice(session: sessionmaker,
             invoice_base = TaxInvoiceOutgoingSchema(**new_invoice_details)
             new_invoice = create_invoice(session, invoice_base)
             new_invoice._request_invoice = invoice
-            return new_invoice
+            return "new invoice created", new_invoice
+        struct_logger.info("Invoice exists", invoice_exists=invoice_exists.instance_invoice_id, message="Invoice exists")
 
-        return invoice_exists
+        return  "invoice exists", invoice_exists
 
     except Exception as ex:
 

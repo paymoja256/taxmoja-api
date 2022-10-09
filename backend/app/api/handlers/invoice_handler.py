@@ -6,7 +6,6 @@ from app.models.invoice import TaxInvoiceOutgoing, InvoiceStatuses
 from app.db.schemas.invoice import TaxInvoiceIncomingSchema
 from app.models.invoice_dal import save_invoice, create_outgoing_invoice, get_invoice
 import simplejson as json
-
 from app.api.dependencies.database import get_database
 
 struct_logger = structlog.get_logger(__name__)
@@ -30,15 +29,15 @@ class InvoiceHandler:
                                 tax_invoice: TaxInvoiceIncomingSchema,
                                 country_code,
                                 tax_id):
-        new_invoice = create_outgoing_invoice(db,
-                                              tax_invoice,
-                                              country_code,
-                                              tax_id)
+        message, new_invoice = create_outgoing_invoice(db,
+                                                       tax_invoice,
+                                                       country_code,
+                                                       tax_id)
 
         struct_logger.info(event='create_outgoing_invoice',
-                           message="saved new invoice to database",
-                           invoice=new_invoice,
-                           status="success"
+                           message=message,
+                           invoice=new_invoice.instance_invoice_id,
+                           invoice_status=new_invoice.status
                            )
         return new_invoice
 
@@ -51,38 +50,56 @@ class InvoiceHandler:
         """
 
         struct_logger.info(event='sending_incoming_invoice',
-                           message="get invoice to database",
-                           invoice=invoice,
-                           status="success"
+                           message="processing received invoice",
+                           invoice=invoice.instance_invoice_id,
+                           status = invoice.status
+
                            )
-        #
-        # invoice = get_invoice(db, out_invoice.instance_invoice_id, out_invoice.country_code, out_invoice.client_tin)
 
         if invoice.status == InvoiceStatuses.RECEIVED:
             try:
                 request_invoice = invoice.request_invoice or parse_obj_as(TaxInvoiceIncomingSchema,
                                                                           json.loads(invoice.request_data))
+                
             except:
                 request_invoice = json.loads(invoice.request_data)
                 struct_logger.info(event='sending_incoming_invoice',
-                                   message=str(type(request_invoice))
-
+                                   message=request_invoice.instance_invoice_id
                                    )
+                
+            struct_logger.info(event='sending_incoming_invoice',
+                           message="sending new invoice",
+                           invoice=invoice.instance_invoice_id,
+                           status = invoice.response_data
+                           )
             request_data = await self.convert_request(db, request_invoice)
             invoice.request_data = request_data
             invoice.status = InvoiceStatuses.SENDING
 
         elif invoice.status == InvoiceStatuses.SENT:
             """ZRA blocks if invoice number is sent twice"""
+            struct_logger.info(event='sending_incoming_invoice',
+                           message="invoice already sent",
+                           invoice=invoice.instance_invoice_id,
+                           status = invoice.response_data
+                           )
+
             return invoice
 
         else:
+            struct_logger.info(event='sending_incoming_invoice',
+                           message="resending incoming invoice",
+                           invoice=invoice.instance_invoice_id,
+                           status = invoice.request_data
+                           )
+
             request_data = invoice.request_data
+            await self.client.get_key_signature()
 
         api_response = await self._send_invoice(request_data)
 
-        struct_logger.info(event='Invoice handler',
-                           message="Invoice Sent to API",
+        struct_logger.info(event='EFRIS invoice handler',
+                           message="Invoice sent to api",
                            response=api_response
                            )
         success, response_data = self.convert_response(api_response)
