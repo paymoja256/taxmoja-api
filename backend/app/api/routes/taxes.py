@@ -38,16 +38,15 @@ async def incoming_stock_adjustment(stock_detail: IncomingGoodsStockAdjustmentSc
                                     session=Depends(get_database),
 
                                     stock_service=Depends(get_tax_service)):
-    
+
     try:
-        message= await stock_service.send_goods_stock_adjustment(session, stock_detail)
+        message = await stock_service.send_goods_stock_adjustment(session, stock_detail)
         status_code = "200"
     except Exception as ex:
         message = str(ex)
         status_code = "500"
 
     return {"status_code": status_code, "message": message}
-
 
 
 @router.post("/invoice/issue", name="incoming tax invoices:create-invoice")
