@@ -82,6 +82,7 @@ async def incoming_invoice_queue(tax_invoice: TaxInvoiceIncomingSchema,
         async def send_new_invoice():
             await invoice_service.send_invoice(session, tax_invoice_saved)
 
+
         background_tasks.add_task(send_new_invoice)
         message = "invoice sent for processing"
     except Exception as ex:
