@@ -60,10 +60,6 @@ async def incoming_invoice(tax_invoice: TaxInvoiceIncomingSchema,
         tax_invoice_saved = invoice_service.create_outgoing_invoice(
             session, tax_invoice)
 
-        # async def send_new_invoice():
-        #     await invoice_service.send_invoice(session, tax_invoice_saved)
-
-        # background_tasks.add_task(send_new_invoice)
         message = await invoice_service.send_invoice(session, tax_invoice_saved)
     except Exception as ex:
         raise HTTPException(status_code=404, detail=str(ex))
@@ -71,7 +67,30 @@ async def incoming_invoice(tax_invoice: TaxInvoiceIncomingSchema,
     return {"status_code": "200", "message": message}
 
 
-@router.post("/invoice/cancel", name="incoming tax invoices:cancel credit notes")
+
+@router.post("/invoice/queue", name="incoming tax invoices:queue-invoice")
+async def incoming_invoice_queue(tax_invoice: TaxInvoiceIncomingSchema,
+                           background_tasks: BackgroundTasks,
+                           invoice_service=Depends(get_tax_service),
+                           session=Depends(get_database)
+                           ):
+    try:
+        message = invoice_service
+        tax_invoice_saved = invoice_service.create_outgoing_invoice(
+            session, tax_invoice)
+
+        async def send_new_invoice():
+            await invoice_service.send_invoice(session, tax_invoice_saved)
+
+        background_tasks.add_task(send_new_invoice)
+        message = "invoice sent for processing"
+    except Exception as ex:
+        raise HTTPException(status_code=404, detail=str(ex))
+
+    return {"status_code": "200", "message": message}
+
+
+@router.post("/credit-note/cancel", name="incoming tax invoices:cancel credit notes")
 async def cancel_credit_note(tax_invoice: CreditNoteCancelSchema,
                              background_tasks: BackgroundTasks,
                              invoice_service=Depends(get_tax_service),
