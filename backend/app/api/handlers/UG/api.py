@@ -186,7 +186,7 @@ class EFRIS(EfrisBase):
             }
             struct_logger.info(event="goods_inquiry",
                                db_response=stock_details)
-            return stock_details
+            return True, stock_details
 
         self.interface_code = "T127"
         data = {
@@ -222,12 +222,12 @@ class EFRIS(EfrisBase):
             # stock_details_base = IncomingStockConfigurationSchema(**stock_details)
             # create_stock(db, stock_details_base)
 
-            return goods_details
+            return True,goods_details
         else:
             msg = 'Could not get goods details'
             struct_logger.error(event="goods_inquiry", error=msg,
                                 api_response=api_response, request=data)
-            return {}
+            return False,"Good with goods code {} not found".format(goods_code)
 
     async def get_all_branches(self, db):
         """Get all branches"""
@@ -264,7 +264,7 @@ class EFRIS(EfrisBase):
     async def goods_stock_in(self, db, goods_detail: IncomingGoodsStockAdjustmentSchema):
         """Goods Stock Maintain"""
         code = goods_detail.goods_code
-        goods_configuration = await self.goods_inquiry(db, code)
+        proceed, goods_configuration = await self.goods_inquiry(db, code)
         branch_id = await self.get_all_branches(db)
         stock_in_date = datetime.date.today().strftime("%Y-%m-%d")
         if goods_configuration:
@@ -510,7 +510,7 @@ class EFRIS(EfrisBase):
 
     async def stock_quantity_by_goods_id(self, goods_code=""):
         """Goods/Services Inquiry"""
-        good_details = await self.goods_inquiry(goods_code)
+        proceed, good_details = await self.goods_inquiry(goods_code)
         self.interface_code = "T128"
         self.data = {
             "id": good_details['id'],

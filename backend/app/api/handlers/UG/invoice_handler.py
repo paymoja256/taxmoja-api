@@ -85,10 +85,8 @@ class TaxInvoiceHandler(InvoiceHandler):
                 goods_code = taxable_item.good_code
                 quantity = taxable_item.quantity
                 sale_price = taxable_item.sale_price
-                tax_detail = await self.client.goods_inquiry(db, goods_code)
-                struct_logger.info(
-                    event="post_normal_invoice", tax_detail=tax_detail)
-                if tax_detail:
+                proceed,tax_detail = await self.client.goods_inquiry(db, goods_code)
+                if proceed:
                     unit_price = sale_price
                     total = float(unit_price) * float(quantity)
                     is_zero_rate = tax_detail["isZeroRate"]
@@ -149,12 +147,11 @@ class TaxInvoiceHandler(InvoiceHandler):
                     self.goods_details.append(goods_detail)
                     self.tax_details.append(tax_detail)
                     self.payway.append(item_payway)
+              
                 else:
                     struct_logger.error(event='convert_request', api="efris", item=goods_code,
                                         message='item tax details not successfully retrieved from UG')
-                    raise HTTPException(status_code=404, detail="Unable to create request data in Efris api for "
-                                                                "invoice {}".format(
-                                                                    self.tax_invoice.instance_invoice_id))
+                    return None
 
             self.transaction_summary = {
                 "netAmount": "{:.2f}".format(self.total_net_amount),
@@ -210,8 +207,8 @@ class TaxInvoiceHandler(InvoiceHandler):
                 goods_code = taxable_item.good_code
                 quantity = taxable_item.quantity
                 sale_price = taxable_item.sale_price
-                tax_detail = await self.client.goods_inquiry(db, goods_code)
-                struct_logger.info(event="post_credit_note",
+                proceed,tax_detail = await self.client.goods_inquiry(db, goods_code)
+                struct_logger.info(event="goods_inquiry",
                                    tax_detail=tax_detail)
                 if tax_detail:
                     unit_price = sale_price

@@ -73,8 +73,12 @@ class InvoiceHandler:
                            status = invoice.response_data
                            )
             request_data = await self.convert_request(db, request_invoice)
-            invoice.request_data = request_data
-            invoice.status = InvoiceStatuses.SENDING
+            if invoice.request_data:
+                invoice.request_data = request_data
+                invoice.status = InvoiceStatuses.SENDING
+            else:
+                invoice.status = InvoiceStatuses.ERROR
+                return "There was an error with the request data"
 
         elif invoice.status == InvoiceStatuses.SENT:
             """ZRA blocks if invoice number is sent twice"""
