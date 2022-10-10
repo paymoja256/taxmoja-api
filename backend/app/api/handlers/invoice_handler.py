@@ -119,7 +119,7 @@ class InvoiceHandler:
         invoice.response_data = response_data
         save_invoice(db, invoice)
 
-        return invoice
+        return invoice.response_data
 
     async def convert_request(self, db, request_invoice: TaxInvoiceIncomingSchema):
         '''
