@@ -28,10 +28,6 @@ def get_application():
 
     app.include_router(api_router, prefix=config.API_PREFIX)
 
-    # @app.get("/")
-    # async def root():
-    #     return {"API Name": config.PROJECT_NAME, "version": config.VERSION}
-
     return app
 
 

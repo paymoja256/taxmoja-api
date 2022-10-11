@@ -25,3 +25,15 @@ async def home_page():
 
     except Exception as ex:
         raise HTTPException(status_code=404, detail=str(ex))
+
+
+
+@router.get("/dashboard", response_class=HTMLResponse)
+async def home_page():
+    try:
+
+        return jinja_templates.TemplateResponse(
+            "/demo1/dist/dashboards/finance-performance.html", {"request": {"API Name": PROJECT_NAME, "version": VERSION}})
+
+    except Exception as ex:
+        raise HTTPException(status_code=404, detail=str(ex))

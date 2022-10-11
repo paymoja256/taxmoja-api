@@ -108,7 +108,7 @@ class EFRIS(EfrisBase):
         response = await self.api_request('post', request_data)
         struct_logger.info(event='efris_request_data',
                            message="sending efris api request",
-                           response=response
+                           response=response.content
 
                            )
         try:
@@ -116,7 +116,7 @@ class EFRIS(EfrisBase):
         except Exception as e:
             struct_logger.error(event='efris_request_data',
                                 message="failed to decode response",
-                                response=response,
+                                response=response.content,
                                 error=e
                                 )
             return response
