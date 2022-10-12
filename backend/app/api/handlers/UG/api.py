@@ -11,7 +11,7 @@ from OpenSSL import crypto
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import AES, PKCS1_v1_5
 import os
-
+from fastapi import HTTPException
 from app.api.handlers.UG.base import EfrisBase
 from app.models.stock_dal import get_stock_by_goods_code, create_stock, get_branch_by_client_id, create_stock_branch
 from app.db.schemas.stock import IncomingGoodsStockAdjustmentSchema, IncomingStockConfigurationSchema, BranchSchema
@@ -224,10 +224,14 @@ class EFRIS(EfrisBase):
 
             return True,goods_details
         else:
-            msg = 'Could not get goods details'
+            msg = "Item with code {} not found".format(goods_code)
             struct_logger.error(event="goods_inquiry", error=msg,
                                 api_response=api_response, request=data)
-            return False,"Good with goods code {} not found".format(goods_code)
+            
+            return False, msg
+            
+            # raise HTTPException(status_code=404, detail="Item with code {} not found".format(goods_code))
+            
 
     async def get_all_branches(self, db):
         """Get all branches"""
@@ -267,7 +271,11 @@ class EFRIS(EfrisBase):
         proceed, goods_configuration = await self.goods_inquiry(db, code)
         branch_id = await self.get_all_branches(db)
         stock_in_date = datetime.date.today().strftime("%Y-%m-%d")
-        if goods_configuration:
+        if proceed:
+            
+            struct_logger.info(event="goods_stock_in", message="goods details found for code:{} ".format(code))
+                               
+           
             self.interface_code = "T131"
             data = {
                 "goodsStockIn": {
@@ -296,7 +304,9 @@ class EFRIS(EfrisBase):
             struct_logger.info(event="goods_stock_in",
                                api_response=api_response, request=data)
             return api_response
-        return {"returnMessage": "Failed to find Goods Configuration"}
+        message="goods details not found for code:{} ".format(code)
+        struct_logger.info(event="goods_stock_in", message=message)
+        return {"returnMessage": message}
 
     async def all_invoice_query(self, reference_no=""):
         """Query all invoice information(Invoice/receipt, credit note, debit note, cancel credit note, cancel debit

@@ -40,8 +40,8 @@ class TaxStockHandler(StockHandler):
         await self.client.get_key_signature()
         response = await self.client.goods_stock_in(db,goods_detail)
         
-        if hasattr(response, 'get'):
-            response = response.get('returnStateInfo', None)
+        # if hasattr(response, 'get'):
+        #     response = response.get('returnStateInfo', None)
 
         return response
 
