@@ -291,7 +291,7 @@
       "production": {
         "tax_pin": "1000028946",
         "efris_url": "http://192.168.64.14:9880/efristcs/ws/tcsapp/getInformation",
-        "efris_url_online": "https://efristest.ura.go.ug/efrisws/ws/taapp/getInformation",
+        "efris_url_online": "https://efrisws.ura.go.ug/ws/taapp/getInformation",
         "industry_code": "101",
         "efris_username": "1000028946",
         "efris_device_no": "1000028946_01",
@@ -337,7 +337,7 @@
       "production": {
         "tax_pin": "1016442416",
         "efris_url": "http://192.168.64.14:9880/efristcs/ws/tcsapp/getInformation",
-        "efris_url_online": "https://efristest.ura.go.ug/efrisws/ws/taapp/getInformation",
+        "efris_url_online": "https://efrisws.ura.go.ug/ws/taapp/getInformation",
         "industry_code": "101",
         "efris_username": "1016442416",
         "efris_device_no": "1016442416_01",
@@ -354,7 +354,7 @@
         "invoice_country": "UG",
         "bitrix_api_url": "https://intranet.fltug.com/rest/73/dtj9j92mofqy16kr/"
       },
-      "testing": true
+      "testing": false
     },
     "1008921533": {
       "api_keys": {

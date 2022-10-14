@@ -1,5 +1,6 @@
 import base64
 from base64 import b64decode, b64encode
+from urllib import response
 import uuid
 import json
 import zlib
@@ -19,7 +20,11 @@ from app.db.schemas.stock import IncomingGoodsStockAdjustmentSchema, IncomingSto
 struct_logger = structlog.get_logger(__name__)
 
 BS = 16
+
+
 def pad(s): return s + (BS - len(s) % BS) * chr(BS - len(s) % BS)
+
+
 def unpad(s): return s[0:-ord(s[-1])]
 
 
@@ -136,13 +141,14 @@ class EFRIS(EfrisBase):
         self.api_response = await self.efris_request_data(content='', signature='')
         try:
             data = json.loads(b64decode(self.api_response['data']['content']))
-            self.aes_password = self.key_decryption(b64decode(data['passowrdDes']))
+            self.aes_password = self.key_decryption(
+                b64decode(data['passowrdDes']))
             self.signature = data['sign']
             struct_logger.info(event="get_key_signature",
-                            aes_password=self.aes_password, signature=self.signature)
+                               aes_password=self.aes_password, signature=self.signature)
             return self.aes_password
         except Exception as ex:
-            
+
             return self.api_response
 
     async def normal_invoice_query(self, invoice_no="", device_no="", invoice_type=""):
@@ -222,16 +228,15 @@ class EFRIS(EfrisBase):
             # stock_details_base = IncomingStockConfigurationSchema(**stock_details)
             # create_stock(db, stock_details_base)
 
-            return True,goods_details
+            return True, goods_details
         else:
             msg = "Item with code {} not found".format(goods_code)
             struct_logger.error(event="goods_inquiry", error=msg,
                                 api_response=api_response, request=data)
-            
+
             return False, msg
-            
+
             # raise HTTPException(status_code=404, detail="Item with code {} not found".format(goods_code))
-            
 
     async def get_all_branches(self, db):
         """Get all branches"""
@@ -272,10 +277,9 @@ class EFRIS(EfrisBase):
         branch_id = await self.get_all_branches(db)
         stock_in_date = datetime.date.today().strftime("%Y-%m-%d")
         if proceed:
-            
-            struct_logger.info(event="goods_stock_in", message="goods details found for code:{} ".format(code))
-                               
-           
+            struct_logger.info(
+                event="goods_stock_in", message="goods details found for code:{} ".format(code))
+
             self.interface_code = "T131"
             data = {
                 "goodsStockIn": {
@@ -304,7 +308,7 @@ class EFRIS(EfrisBase):
             struct_logger.info(event="goods_stock_in",
                                api_response=api_response, request=data)
             return api_response
-        message="goods details not found for code:{} ".format(code)
+        message = "goods details not found for code:{} ".format(code)
         struct_logger.info(event="goods_stock_in", message=message)
         return {"returnMessage": message}
 
@@ -616,14 +620,14 @@ class EFRIS(EfrisBase):
         api_response = await self.efris_request_data(content=encrypted_content, signature=signature)
         struct_logger.info(event="online_mode_request",
                            api_response=api_response)
-        
+
         decrypted_api_response = self.decrypt_api_response(api_response)
-        
+
         if decrypted_api_response:
-             struct_logger.info(event="online_mode_request",
-                           decrypted_api_response=api_response, request=data)
-             return decrypted_api_response
-       
+            struct_logger.info(event="online_mode_request",
+                               decrypted_api_response=api_response, request=data)
+            return decrypted_api_response
+
         return api_response
 
     async def online_mode_request_unzip(self, data):
@@ -632,9 +636,21 @@ class EFRIS(EfrisBase):
         signature = self.sign_data(encrypted_content)
         api_response = await self.efris_request_data(content=encrypted_content, signature=signature)
         api_response = b64decode(api_response['data']['content'].encode())
-        struct_logger.info(event=" online_mode_request_unzip",
-                           api_response=type(api_response))
-        # return api_response
+        # api_response = self.un_zip_data(api_response)
+        struct_logger.info(event=" online_mode_request_unzip", response=type(api_response), api_response=api_response)
+
+        # api_response = b64decode(api_response['data']['content'].encode())
+        # struct_logger.info(event=" online_mode_request_unzip",
+        #                    response=api_response)
+        # api_response = self.un_zip_data(api_response)
+
+        # struct_logger.info(event=" online_mode_request_unzip",
+        #                    response=type(api_response),
+        #                    )
+
+        # print(api_response.decode('utf-8'))
+
+        # return "api_response"
 
     def decrypt_api_response(self, api_response):
         try:
