@@ -107,20 +107,21 @@ async def cancel_credit_note(tax_invoice: CreditNoteCancelSchema,
     return {"status_code": "200", "message": message}
 
 
-@router.get("/invoice/query/{invoice_id}", name="incoming tax invoices:query-invoice")
-async def query_incoming_invoice(tax_invoice: TaxInvoiceIncomingSchema,
-                                 invoice_service=Depends(get_tax_service),
-                                 session=Depends(get_database)
+@router.get("/invoice/query/{instance_invoice_id}", name="incoming tax invoices:query-invoice")
+async def query_incoming_invoice(instance_invoice_id: str, session=Depends(get_database), 
+                            tax_service=Depends(get_tax_service),
                                  ):
     try:
-        message = invoice_service
-        invoice_information = invoice_service.create_outgoing_invoice(
-            session, tax_invoice)
+        request_data = await tax_service.get_invoice_by_instance_id(session, instance_invoice_id)
 
+        struct_logger.info(event="retrieved invoice from database",
+                           message=request_data
+                           )
+        
+        return request_data
     except Exception as ex:
         raise HTTPException(status_code=404, detail=str(ex))
-
-    return {"status_code": "200", "message": message}
+    
 
 
 @router.get("/information/{information_request}")

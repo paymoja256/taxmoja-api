@@ -2,6 +2,7 @@ import base64
 import hashlib
 import os
 from ctypes import cdll, create_string_buffer, byref
+import pathlib
 from random import randint
 import simplejson as json
 import Padding
@@ -113,8 +114,9 @@ class ZRA(ZraBase):
         self.serial = randint(100000, 999999)
         self.enc = DataEncryption(self.key)
         self.timestamp = ''
-        current_path = os.path.dirname(__file__)
+        current_path=pathlib.Path(__file__).parent.resolve()
         self.dll = "{}/libFiscalCode64.so".format(current_path)
+        print(current_path)
         self.fiscal_code_obj = FiscalCode(self.dll)
         self.headers = {
             'Content-Type': "application/json;Charset=utf-8",
