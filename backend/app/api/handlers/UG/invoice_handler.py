@@ -567,6 +567,33 @@ class TaxInvoiceHandler(InvoiceHandler):
 
         return self.invoice_data
 
+    async def get_invoice_by_instance_id_query(self, db,
+                                         instance_invoice_id,
+                                         country_code,
+                                         tax_id):
+
+        """Get invoice from database"""
+
+        await self.client.get_key_signature()
+
+        invoice_details = await self.client.all_invoice_query(instance_invoice_id)
+        invoice_no = invoice_details['invoiceNo']
+        self.invoice_data = await self.client.get_invoice_details(invoice_no)
+        struct_logger.info(event="get_invoice_data",
+                           invoice_data=self.invoice_data,
+                           message="Retrieved from api: {}".format(instance_invoice_id))
+
+        # basicInformation = self.invoice_data.get('basicInformation', None)
+        # if basicInformation:
+        #     anti_fake_code = basicInformation['antifakeCode']
+        #     qr_code = self.invoice_data['summary']['qrCode']
+
+        #     self.generate_qr_code(qr_code, country_code,
+        #                           tax_id, anti_fake_code)
+
+        return self.invoice_data
+
+    
     def validate_buyer_details(self):
 
         if self.buyer_details.buyer_type in ('0', '2', '3'):

@@ -52,6 +52,15 @@ class TaxService:
                                                                         self.tax_id)
         return invoice
 
+    
+    async def get_invoice_query_by_instance_id(self, db, instance_invoice_id):
+        invoice = await self.invoice_manager.get_invoice_by_instance_id_query(db,
+                                                                        instance_invoice_id,
+                                                                        self.country_code,
+                                                                        self.tax_id)
+        return invoice
+    
+    
     def create_stock_configuration(self, db, stock_configuration: IncomingStockConfigurationSchema):
         new_stock_config = self.stock_manager.create_outgoing_stock_configuration(db,
                                                                                   stock_configuration,

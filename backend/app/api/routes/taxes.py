@@ -38,7 +38,6 @@ async def incoming_stock_adjustment(stock_detail: IncomingGoodsStockAdjustmentSc
                                     session=Depends(get_database),
 
                                     stock_service=Depends(get_tax_service)):
-
     try:
         message = await stock_service.send_goods_stock_adjustment(session, stock_detail)
         status_code = "200"
@@ -67,13 +66,12 @@ async def incoming_invoice(tax_invoice: TaxInvoiceIncomingSchema,
     return {"status_code": "200", "message": message}
 
 
-
 @router.post("/invoice/queue", name="incoming tax invoices:queue-invoice")
 async def incoming_invoice_queue(tax_invoice: TaxInvoiceIncomingSchema,
-                           background_tasks: BackgroundTasks,
-                           invoice_service=Depends(get_tax_service),
-                           session=Depends(get_database)
-                           ):
+                                 background_tasks: BackgroundTasks,
+                                 invoice_service=Depends(get_tax_service),
+                                 session=Depends(get_database)
+                                 ):
     try:
         message = invoice_service
         tax_invoice_saved = invoice_service.create_outgoing_invoice(
@@ -81,7 +79,6 @@ async def incoming_invoice_queue(tax_invoice: TaxInvoiceIncomingSchema,
 
         async def send_new_invoice():
             await invoice_service.send_invoice(session, tax_invoice_saved)
-
 
         background_tasks.add_task(send_new_invoice)
         message = "invoice sent for processing"
@@ -108,20 +105,19 @@ async def cancel_credit_note(tax_invoice: CreditNoteCancelSchema,
 
 
 @router.get("/invoice/query/{instance_invoice_id}", name="incoming tax invoices:query-invoice")
-async def query_incoming_invoice(instance_invoice_id: str, session=Depends(get_database), 
-                            tax_service=Depends(get_tax_service),
+async def query_incoming_invoice(instance_invoice_id: str, session=Depends(get_database),
+                                 tax_service=Depends(get_tax_service),
                                  ):
     try:
-        request_data = await tax_service.get_invoice_by_instance_id(session, instance_invoice_id)
+        request_data = await tax_service.get_invoice_query_by_instance_id(session, instance_invoice_id)
 
         struct_logger.info(event="retrieved invoice from database",
                            message=request_data
                            )
-        
+
         return request_data
     except Exception as ex:
         raise HTTPException(status_code=404, detail=str(ex))
-    
 
 
 @router.get("/information/{information_request}")
