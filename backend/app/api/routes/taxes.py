@@ -1,11 +1,14 @@
+
 import structlog
 from fastapi.responses import HTMLResponse
 from fastapi import APIRouter, Depends, BackgroundTasks, HTTPException, Header
+from fastapi.templating import Jinja2Templates
 from app.db.schemas.invoice import TaxInvoiceIncomingSchema, CreditNoteCancelSchema
 from app.api.dependencies.authentication import get_tax_service
 from app.api.dependencies.database import get_database
 from app.db.schemas.stock import IncomingGoodsStockAdjustmentSchema
 from app.db.schemas.stock import IncomingStockConfigurationSchema
+from app.api.dependencies.common import change_keys, convert
 
 router = APIRouter()
 
@@ -141,10 +144,6 @@ async def print_invoice(instance_invoice_id: str, session=Depends(get_database),
                         tax_service=Depends(get_tax_service), x_tax_id: str = Header(...)):
     try:
         printed_invoice = await tax_service.get_invoice_by_id(session, instance_invoice_id)
-        # if not printed_invoice:
-        #     return HTTPException(status_code=404,
-        #                          detail=f'Invoice {instance_invoice_id} does not exist in database'
-        #                          )
         struct_logger.info(event="retrieved invoice from database",
                            message=printed_invoice
                            )
@@ -155,7 +154,7 @@ async def print_invoice(instance_invoice_id: str, session=Depends(get_database),
 
         backend = Path().absolute()
 
-        from fastapi.templating import Jinja2Templates
+        
 
         jinja_templates = Jinja2Templates(
             directory=f'{backend}/app/api/static/templates')
@@ -189,8 +188,7 @@ async def print_credit_note(instance_invoice_id: str, session=Depends(get_databa
         from pathlib import Path
 
         backend = Path().absolute()
-
-        from fastapi.templating import Jinja2Templates
+     
 
         jinja_templates = Jinja2Templates(
             directory=f'{backend}/app/api/static/templates')
@@ -210,22 +208,4 @@ async def print_credit_note(instance_invoice_id: str, session=Depends(get_databa
         raise HTTPException(status_code=404, detail=str(ex))
 
 
-def change_keys(obj, convert):
-    """
-    Recursively goes through the dictionary obj and replaces keys with the convert function.
-    """
-    if isinstance(obj, (str, int, float)):
-        return obj
-    if isinstance(obj, dict):
-        new = obj.__class__()
-        for k, v in obj.items():
-            new[convert(k)] = change_keys(v, convert)
-    elif isinstance(obj, (list, set, tuple)):
-        new = obj.__class__(change_keys(v, convert) for v in obj)
-    else:
-        return obj
-    return new
 
-
-def convert(k):
-    return k.replace('-', '_')

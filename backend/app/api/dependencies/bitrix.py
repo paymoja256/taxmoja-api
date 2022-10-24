@@ -4,7 +4,7 @@ from bitrix24 import *
 
 from app.db.schemas.stock import IncomingStockConfigurationSchema, IncomingGoodsStockAdjustmentSchema
 from app.db.schemas.invoice import TaxInvoiceIncomingSchema, InvoiceDetailsSchema, InvoiceGoodSchema, BuyerDetailsSchema
-from app.api.dependencies.efris_common import clean_currency, clean_buyer_type, clean_currency_product
+from app.api.dependencies.common import clean_currency, clean_buyer_type, clean_currency_product
 
 struct_logger = structlog.get_logger(__name__)
 

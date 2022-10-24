@@ -1,10 +1,9 @@
 import structlog
 
 from app.api.dependencies.http import HttpxRequest
-from app.api.dependencies.efris_common import clean_currency_product
 from app.db.schemas.stock import IncomingStockConfigurationSchema
 from app.db.schemas.stock import IncomingGoodsStockAdjustmentSchema
-from app.api.dependencies.efris_common import clean_buyer_type, get_tax_rate
+from app.api.dependencies.common import clean_buyer_type, get_tax_rate,clean_currency_product
 from app.db.schemas.invoice import BuyerDetailsSchema, InvoiceGoodSchema, TaxInvoiceIncomingSchema, \
     InvoiceDetailsSchema
 

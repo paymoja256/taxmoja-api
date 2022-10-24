@@ -13,7 +13,7 @@ from pathlib import Path
 
 backend = Path().absolute()
 
-jinja_templates = Jinja2Templates(directory=f'{backend}/app/api/static/templates')
+jinja_templates = Jinja2Templates(directory=f'{backend}/app/api/static/')
 
 
 @router.get("/", response_class=HTMLResponse)
@@ -21,11 +21,10 @@ async def home_page():
     try:
 
         return jinja_templates.TemplateResponse(
-            "/home/index.html", {"request": {"API Name": PROJECT_NAME, "version": VERSION}})
+            "templates/home/index.html", {"request": {"API Name": PROJECT_NAME, "version": VERSION}})
 
     except Exception as ex:
         raise HTTPException(status_code=404, detail=str(ex))
-
 
 
 @router.get("/dashboard", response_class=HTMLResponse)
@@ -33,7 +32,7 @@ async def home_page():
     try:
 
         return jinja_templates.TemplateResponse(
-            "/demo1/dist/dashboards/finance-performance.html", {"request": {"API Name": PROJECT_NAME, "version": VERSION}})
+            "/templates/home/finance-performance.html", {"request": {"API Name": PROJECT_NAME, "version": VERSION}})
 
     except Exception as ex:
         raise HTTPException(status_code=404, detail=str(ex))
