@@ -236,8 +236,6 @@ class EFRIS(EfrisBase):
 
             return False, msg
 
-            # raise HTTPException(status_code=404, detail="Item with code {} not found".format(goods_code))
-
     async def get_all_branches(self, db):
         """Get all branches"""
         branch = get_branch_by_client_id(db, self.settings["tax_pin"])
@@ -636,21 +634,10 @@ class EFRIS(EfrisBase):
         signature = self.sign_data(encrypted_content)
         api_response = await self.efris_request_data(content=encrypted_content, signature=signature)
         api_response = b64decode(api_response['data']['content'].encode())
-        # api_response = self.un_zip_data(api_response)
+            # api_response = self.un_zip_data(api_response)
         struct_logger.info(event=" online_mode_request_unzip", response=type(api_response), api_response=api_response)
 
-        # api_response = b64decode(api_response['data']['content'].encode())
-        # struct_logger.info(event=" online_mode_request_unzip",
-        #                    response=api_response)
-        # api_response = self.un_zip_data(api_response)
-
-        # struct_logger.info(event=" online_mode_request_unzip",
-        #                    response=type(api_response),
-        #                    )
-
-        # print(api_response.decode('utf-8'))
-
-        # return "api_response"
+        return api_response
 
     def decrypt_api_response(self, api_response):
         try:
@@ -658,11 +645,10 @@ class EFRIS(EfrisBase):
             decrypted_content = self.aes_decryption(content)
             return decrypted_content
         except (KeyError, IndexError) as ex:
-            # KeyError or IndexError meaans content was missing or empty
-            # so invalid response
+            
             struct_logger.error(event="decrypt_efris_api_response", error='content missing or empty',
                                 api_response=api_response)
-            # return it anyway for caller to see the info
+           
             return api_response
 
     def retrieve_private_key(self):

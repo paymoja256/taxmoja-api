@@ -86,6 +86,7 @@ class TaxInvoiceHandler(InvoiceHandler):
                 quantity = taxable_item.quantity
                 sale_price = taxable_item.sale_price
                 proceed,tax_detail = await self.client.goods_inquiry(db, goods_code)
+                print(tax_detail)
                 if proceed:
                     unit_price = sale_price
                     total = float(unit_price) * float(quantity)
