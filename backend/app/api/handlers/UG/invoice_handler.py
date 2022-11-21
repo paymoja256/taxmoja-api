@@ -415,6 +415,10 @@ class TaxInvoiceHandler(InvoiceHandler):
                                     self.tax_invoice.instance_invoice_id))
 
     def create_normal_invoice_json_data(self):
+        if self.invoice_data.goods_description:
+            reference = self.invoice_data.goods_description
+        else:
+            reference = str(self.invoice_data.invoice_code)
         self.json_data = {
             "sellerDetails": {
                 "tin": self.uga_tax_pin,
@@ -425,7 +429,7 @@ class TaxInvoiceHandler(InvoiceHandler):
                 "linePhone": self.uga_mobile_phone,
                 "emailAddress": self.uga_email_address,
                 "placeOfBusiness": self.uga_place_business,
-                "referenceNo": str(self.invoice_data.invoice_code)
+                "referenceNo": reference
             },
             "basicInformation": {
                 "invoiceNo": "",
