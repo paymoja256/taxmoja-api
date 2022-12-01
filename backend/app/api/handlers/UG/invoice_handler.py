@@ -160,7 +160,7 @@ class TaxInvoiceHandler(InvoiceHandler):
                 "grossAmount": "{:.2f}".format(self.total_gross_amount),
                 "itemCount": str(self.item_count),
                 "modeCode": "1",
-                "remarks": str(self.invoice_data.invoice_code),
+                "remarks": self.invoice_data.goods_description,
                 "qrCode": ""
             }
 
