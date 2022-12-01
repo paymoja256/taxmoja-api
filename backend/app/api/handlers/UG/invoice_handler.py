@@ -429,7 +429,7 @@ class TaxInvoiceHandler(InvoiceHandler):
                 "linePhone": self.uga_mobile_phone,
                 "emailAddress": self.uga_email_address,
                 "placeOfBusiness": self.uga_place_business,
-                "referenceNo": reference
+                "referenceNo":  str(self.invoice_data.invoice_code)
             },
             "basicInformation": {
                 "invoiceNo": "",
@@ -643,7 +643,10 @@ def clean_invoice_type(invoice_type):
         return 1
 
     elif invoice_type in ('2', 'credit'):
+        
         return 2
 
+    elif invoice_type in ('5', 'memo'):
+        return 5
     else:
         return 1
