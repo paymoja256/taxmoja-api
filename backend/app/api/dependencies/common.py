@@ -1,3 +1,6 @@
+from urllib.request import urlopen
+
+
 def clean_currency(currency):
     if currency == 'UGX' or currency == '101':
         return 'UGX'

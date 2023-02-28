@@ -10,6 +10,7 @@ from app.db.schemas.stock import IncomingGoodsStockAdjustmentSchema
 from app.db.schemas.stock import IncomingStockConfigurationSchema
 from app.api.dependencies.common import change_keys, convert
 
+
 router = APIRouter()
 
 struct_logger = structlog.get_logger(__name__)

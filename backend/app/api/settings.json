@@ -117,7 +117,7 @@
         "client_name": "Vital Tomosi",
         "client_email": "info@vitdl.co.ug",
         "client_address": " Plot 37/41 | Luzira|, Kampala",
-        "client_mobile": "0706746530",
+        "client_mobile": "0702822494",
         "online_mode": "True",
         "private_key": "/Applications/MAMP/htdocs/paymoja efris/fastapi/mita/api/efris/keys/1003841291/key.p12",
         "private_key_password": "vital",
@@ -128,8 +128,8 @@
     },
     "1000591263": {
       "api_keys": {
-        "staging": "ahd8grufctkmso6m5qrgqexbi53apuzd",
-        "production": "ahd8grufctkmso6m5qrgqexbi53apuzd"
+        "staging": "635f1ee-3493-407d-8ac8-8afd21a88795",
+        "production": "635f1ee-3493-407d-8ac8-8afd21a88795"
       },
       "staging": {
         "tax_pin": "1000591263",
@@ -162,24 +162,24 @@
       "production": {
         "tax_pin": "1000591263",
         "efris_url": "http://192.168.64.14:9880/efristcs/ws/tcsapp/getInformation",
-        "efris_url_online": "https://efristest.ura.go.ug/efrisws/ws/taapp/getInformation",
+        "efris_url_online": "https://efrisws.ura.go.ug/ws/taapp/getInformation",
         "industry_code": "101",
         "efris_username": "1000591263",
-        "efris_device_no": "TCSb60e302730239923",
+        "efris_device_no": "1000591263_01",
         "efris_tax_payer_id": "1000591263",
         "app_id": "AP04",
         "efris_version": "1.1.20191201",
         "client_name": "Future Link Technologies",
         "client_email": "info@flt.co.ug",
         "client_address": "Plot 97 Bukoto St, Kampala",
-        "client_mobile": "0706746530",
+        "client_mobile": "+256774638790",
         "online_mode": "True",
-        "private_key": "/Applications/MAMP/htdocs/paymoja efris/fastapi/mita/api/efris/keys/1000591263/key.pfx",
+        "private_key": "/Applications/MAMP/htdocs/paymoja efris/fastapi/mita/api/efris/keys/1000591263/key.p12",
         "private_key_password": "futurelink",
         "invoice_country": "UG",
         "bitrix_api_url": "https://intranet.fltug.com/rest/73/dtj9j92mofqy16kr/"
       },
-      "testing": true
+      "testing": false
     },
     "1005332112": {
       "api_keys": {
@@ -199,7 +199,7 @@
         "client_name": "Rocket Products Limited",
         "client_email": "info@rocketafrica.com",
         "client_address": "Kololo",
-        "client_mobile": "0706746530",
+        "client_mobile": "0755119258",
         "online_mode": "True",
         "private_key_password": "rocket",
         "invoice_country": "UG",
@@ -245,7 +245,7 @@
         "client_name": "Rocket Products Limited",
         "client_email": "info@Engie.com",
         "client_address": "Plot 4, Hannington Road, Kampala",
-        "client_mobile": "0706746530",
+        "client_mobile": "0755119258",
         "online_mode": "True",
         "private_key_password": "rocket",
         "invoice_country" : "UG",
@@ -301,7 +301,7 @@
         "client_name": "Mogas",
         "client_email": "denis.m@mogasoil.com",
         "client_address": "Nile Avenue , 40 , Box no: 19, Kampala",
-        "client_mobile": "0706746530",
+        "client_mobile": "0414341701",
         "online_mode": "True",
         "private_key": "/Applications/MAMP/htdocs/paymoja efris/fastapi/mita/api/efris/keys/1000028946/key.pfx",
         "private_key_password": "mogas",
@@ -347,7 +347,7 @@
         "client_name": "Reelanalytics Uganda",
         "client_email": "columba.mwandembe@reelanalytics.net",
         "client_address": "1st Floor Expanding Social Protection Building, Plot 9 Lourdel Road, Nakasero Kampala Uganda",
-        "client_mobile": "0706746530",
+        "client_mobile": "+256706730746",
         "online_mode": "True",
         "private_key": "/Applications/MAMP/htdocs/paymoja efris/fastapi/mita/api/efris/keys/1016442416/key.pfx",
         "private_key_password": "reelanalytics",
@@ -486,8 +486,5 @@
       "ifu": "3201810399636",
       "sfe_token": ""
     }
-  },
-  "TZ": {},
-  "KN": {},
-  "RW": {}
+  }
 }
