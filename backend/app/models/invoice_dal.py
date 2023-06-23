@@ -23,6 +23,8 @@ def create_outgoing_invoice(session: sessionmaker,
     try:
 
         invoice_exists = get_invoice(session, invoice.instance_invoice_id, country_code, tax_id)
+
+        print("invoice exists: {}-{}".format(invoice_exists, invoice.instance_invoice_id))
          
         if not invoice_exists :
             new_invoice_details = {
@@ -78,7 +80,6 @@ def get_invoice(session: sessionmaker, instance_invoice_id: str, country_code: s
             TaxInvoiceOutgoing.instance_invoice_id == instance_invoice_id,
             TaxInvoiceOutgoing.country_code == country_code,
             TaxInvoiceOutgoing.client_tin == tax_id).one_or_none()
-        db.expunge_all()
         return invoice
 
 
