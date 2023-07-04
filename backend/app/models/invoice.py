@@ -18,7 +18,7 @@ class TaxInvoiceOutgoing(Base):
 
     id = Column(BigInteger, primary_key=True, index=True)
     invoice_code = Column(String(255), index=True, nullable=True)
-    instance_invoice_id = Column(String(255), index=True, unique=True, nullable=True)
+    instance_invoice_id = Column(String(255), index=True, unique=False, nullable=True)
     client_tin = Column(String(255), index=True)
     related_invoice = Column(String(255), index=True, nullable=True)
     request_data = Column(JSON)
