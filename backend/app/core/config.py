@@ -1,13 +1,7 @@
-import os
-
 import structlog
-from fastapi import HTTPException
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 from starlette.config import Config
-from starlette.datastructures import Secret, CommaSeparatedStrings
-
-from starlette.status import HTTP_500_INTERNAL_SERVER_ERROR
+from starlette.datastructures import Secret
 
 from sqlalchemy.ext.declarative import declarative_base
 
