@@ -33,6 +33,7 @@ aiomysql
 pymysql
 asyncpg
 cryptography
+psycopg2
 
 # dev
 #pytestHMACSHA256
