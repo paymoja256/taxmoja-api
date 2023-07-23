@@ -23,9 +23,6 @@ from app.core.config import SQLALCHEMY_DATABASE_URL as DATABASE_URL
 
 from app.core.config import Base, MYSQL_DB
 
-from app.models.invoice import TaxInvoiceOutgoing,TaxInvoiceNumber
-
-from app.models.stock import Stock, StockBranches
 
 # add your model's MetaData object here
 # for 'autogenerate' support
