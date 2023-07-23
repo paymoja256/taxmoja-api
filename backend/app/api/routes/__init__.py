@@ -6,7 +6,7 @@ from app.api.routes.common import router as common_router
 
 router = APIRouter()
 
-router.include_router(taxes_router, prefix="/taxmoja", tags=["Taxmoja"],
+router.include_router(taxes_router, prefix="", tags=["Taxmoja"],
                       responses={404: {"description": "oops can't help "
                                                       "you with that!"}})
 

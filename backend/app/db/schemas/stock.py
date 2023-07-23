@@ -11,7 +11,7 @@ class IncomingStockConfigurationSchema(CoreModel):
     currency: str
     commodity_tax_category: str
     goods_description: str
-    status: Optional[InvoiceStatuses]
+    status: Optional[InvoiceStatuses]="RECEIVED"
 
     class Config:
         orm_mode = True
