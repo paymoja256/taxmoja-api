@@ -16,6 +16,8 @@ class TaxInvoiceHandler(InvoiceHandler):
         self.invoice_code = None
         self.tax_invoice = {}
         self.uga_tax_pin = settings["tax_pin"]
+        self.invoice_good_details = []
+        self.invoice_payway_data = []
         self.taxable_items = {}
         self.invoice_data = []
         self.buyer_details = {}
@@ -59,8 +61,9 @@ class TaxInvoiceHandler(InvoiceHandler):
         self.credit_goods_details = []
         self.credit_payway_details = []
         self.original_invoice_code = ""
+        self.credit_summary_detail = {}
 
-    async def convert_request(self, db, tax_invoice: TaxInvoiceIncomingSchema, erp=''):
+    async def convert_request(self, db, tax_invoice: TaxInvoiceIncomingSchema, erp=""):
         await self.client.get_key_signature()
         self.taxable_items = tax_invoice.goods_details
         self.invoice_data = tax_invoice.invoice_details
@@ -75,10 +78,12 @@ class TaxInvoiceHandler(InvoiceHandler):
             return await self.create_credit_invoice(db)
 
         else:
-            return await self.create_normal_invoice(db,erp)
+            return await self.create_normal_invoice(db, erp)
 
     async def create_normal_invoice(self, db, erp=""):
-        struct_logger.info(event="create_normal_invoice", msg = "creating erp invoice", erp=erp)
+        struct_logger.info(
+            event="create_normal_invoice", msg="creating erp invoice", erp=erp
+        )
         try:
             for taxable_item in self.taxable_items:
                 goods_code = taxable_item.good_code
@@ -101,7 +106,7 @@ class TaxInvoiceHandler(InvoiceHandler):
                     is_exempt, is_zero_rate, self.invoice_data.is_export
                 )
                 if proceed:
-                    if erp.upper()== "DEAR":
+                    if erp.upper() == "DEAR":
                         net_price = float(taxable_item.sale_price)
                         unit_price = round(
                             (net_price + (net_price * float(self.tax_value))), 2
@@ -215,6 +220,7 @@ class TaxInvoiceHandler(InvoiceHandler):
         try:
             self.reason_code = self.invoice_data.return_reason_code
             self.reason = self.invoice_data.return_reason
+            credit_note_goods = self.taxable_items
             self.invoice_code = self.invoice_data.invoice_code
             self.invoice_type = "2"
             self.original_invoice_code = self.invoice_data.original_instance_invoice_id
@@ -232,103 +238,129 @@ class TaxInvoiceHandler(InvoiceHandler):
 
             self.seller_details = self.invoice_data["sellerDetails"]
             self.buyer_details = self.invoice_data["buyerDetails"]
-            self.invoice_tax_details = self.invoice_data["taxDetails"]
-            self.invoice_good_details = self.invoice_data["goodsDetails"]
-            self.invoice_payway_data = self.invoice_data["payWay"]
-            self.invoice_summary_data = self.invoice_data["summary"]
+            self.invoice_tax_details = []
+            invoice_good_details = self.invoice_data["goodsDetails"]
+            for credit_good in credit_note_goods:
+                credit_item_code = credit_good.good_code
+                for invoice_good in invoice_good_details:
+                    invoice_item_code = invoice_good["itemCode"]
+                    if invoice_item_code == credit_item_code:
+                        struct_logger.info(
+                            event="post_credit_note",
+                            msg="Adding item details",
+                            item_code=invoice_item_code,
+                        )
+                        net_amount = float(invoice_good["total"]) - float(
+                            invoice_good["tax"]
+                        )
+                        tax_amount = float(invoice_good["tax"])
+                        gross_amount = float(invoice_good["total"])
+                        tax_rate = invoice_good["taxRate"]
+                        self.set_credit_tax_categories(tax_rate)
+                        order_number = invoice_good["orderNumber"]
+                        self.total_net_amount = self.total_net_amount + net_amount
+                        self.total_taxable_amount = (
+                            self.total_taxable_amount + tax_amount
+                        )
+                        self.total_gross_amount = self.total_gross_amount + float(
+                            gross_amount
+                        )
+                        tax_detail = {
+                            "taxCategoryCode": self.tax_symbol,
+                            "netAmount": "{}".format(net_amount),
+                            "taxRate": tax_rate,
+                            "taxAmount": "{}".format(tax_amount),
+                            "grossAmount": "{}".format(gross_amount),
+                            "exciseUnit": "",
+                            "exciseCurrency": "",
+                            "taxRateName": self.tax_category,
+                        }
+                        item_payway = {
+                            "paymentMode": "101",
+                            "paymentAmount": "{}".format(gross_amount),
+                            "orderNumber": order_number,
+                        }
+                        self.item_count = self.item_count + 1
+                        self.item_no = self.item_no + 1
+                        self.invoice_good_details.append(invoice_good)
+                        self.invoice_tax_details.append(tax_detail)
+                        self.invoice_payway_data.append(item_payway)
+
+            self.invoice_summary_data = {
+                "netAmount": "{:.2f}".format(self.total_net_amount),
+                "taxAmount": "{:.2f}".format(self.total_taxable_amount),
+                "grossAmount": "{:.2f}".format(self.total_gross_amount),
+                "itemCount": str(self.item_count),
+                "modeCode": "1",
+                "remarks": str(self.invoice_code),
+                "qrCode": "",
+            }
+
             self.invoice_basic_data = self.invoice_data["basicInformation"]
             self.efris_related_invoice_number = self.invoice_basic_data["invoiceNo"]
             self.efris_related_invoice_id = self.invoice_basic_data["invoiceId"]
             self.currency = self.invoice_basic_data["currency"]
             self.buyer_type = self.invoice_data["buyerDetails"]["buyerType"]
 
-            for taxable_item in self.taxable_items:
-                goods_code = taxable_item.good_code
-                quantity = taxable_item.quantity
-                sale_price = taxable_item.sale_price
-                proceed, tax_detail = await self.client.goods_inquiry(db, goods_code)
-                struct_logger.info(event="goods_inquiry", tax_detail=tax_detail)
-                if tax_detail:
-                    unit_price = sale_price
-                    total = float(unit_price) * float(quantity)
-                    is_zero_rate = tax_detail["isZeroRate"]
-                    is_exempt = tax_detail["isExempt"]
-                    measure_unit = tax_detail["measureUnit"]
-                    self.set_tax_categories(is_exempt, is_zero_rate)
-                    net_amount = float(total) / (1 + float(self.tax_value))
-                    self.total_net_amount = self.total_net_amount + net_amount
-                    tax_amount = float(net_amount) * float(self.tax_value)
-                    self.total_taxable_amount = self.total_taxable_amount + tax_amount
-                    self.total_gross_amount = self.total_gross_amount + float(total)
-                    goods_detail = {
-                        "item": tax_detail["goodsName"],
-                        "itemCode": tax_detail["goodsCode"],
-                        "qty": "-" + str(quantity),
-                        "unitOfMeasure": measure_unit,
-                        "unitPrice": sale_price,
-                        "total": "-" + "{:.2f}".format(total),
-                        "taxRate": self.tax_rate,
-                        "tax": "-" + "{:.2f}".format(tax_amount),
-                        "discountTotal": "",
-                        "discountTaxRate": "",
-                        "orderNumber": str(self.item_count),
-                        "discountFlag": "2",
-                        "deemedFlag": "2",
-                        "exciseFlag": "2",
-                        "categoryId": "",
-                        "categoryName": "",
-                        "goodsCategoryId": tax_detail["commodityCategoryCode"],
-                        "goodsCategoryName": tax_detail["commodityCategoryName"],
-                        "exciseRate": "",
-                        "exciseRule": "",
-                        "exciseTax": "",
-                        "pack": "",
-                        "stick": "",
-                        "exciseUnit": "",
-                        "exciseCurrency": "",
-                        "exciseRateName": "",
-                    }
-                    tax_detail = {
-                        "taxCategoryCode": self.tax_symbol,
-                        "netAmount": "-" + "{:.2f}".format(net_amount),
-                        "taxRate": self.tax_rate,
-                        "taxAmount": "-" + "{:.2f}".format(tax_amount),
-                        "grossAmount": "-" + "{:.2f}".format(total),
-                        "exciseUnit": "",
-                        "exciseCurrency": "",
-                        "taxRateName": self.tax_category,
-                    }
-                    item_payway = {
-                        "paymentMode": "101",
-                        "paymentAmount": "-" + "{:.2f}".format(total),
-                        "orderNumber": self.item_count,
-                    }
-                    self.item_count = self.item_count + 1
-                    self.item_no = self.item_no + 1
-                    self.goods_details.append(goods_detail)
-                    self.tax_details.append(tax_detail)
-                    self.payway.append(item_payway)
-                else:
-                    struct_logger.error(
-                        event="convert_request",
-                        api="efris",
-                        item=goods_code,
-                        message="item tax details not successfully retrieved from UG",
-                    )
-                    raise HTTPException(
-                        status_code=404,
-                        detail="Unable to create request data in Efris api for "
-                        "invoice {}".format(self.tax_invoice.instance_invoice_id),
-                    )
+            for detail in self.invoice_tax_details:
+                credit_tax_detail = {
+                    "taxRate": str(detail["taxRate"]),
+                    "grossAmount": "-" + str(detail["grossAmount"]),
+                    "exciseUnit": "",
+                    "taxAmount": "-" + str(detail["taxAmount"]),
+                    "taxRateName": str(detail["taxRateName"]),
+                    "taxCategoryCode": str(detail["taxCategoryCode"]),
+                    "exciseCurrency": "",
+                    "netAmount": "-" + str(detail["netAmount"]),
+                }
+                self.credit_tax_details.append(credit_tax_detail)
 
-            self.transaction_summary = {
-                "netAmount": "-" + "{:.2f}".format(self.total_net_amount),
-                "taxAmount": "-" + "{:.2f}".format(self.total_taxable_amount),
-                "grossAmount": "-" + "{:.2f}".format(self.total_gross_amount),
-                "itemCount": str(self.item_count),
-                "modeCode": "1",
-                "remarks": str(self.original_invoice_code),
-                "qrCode": "",
+            for detail in self.invoice_good_details:
+                credit_goods_detail = {
+                    "taxRate": str(detail["taxRate"]),
+                    "exciseRate": "",
+                    "orderNumber": str(detail["orderNumber"]),
+                    "exciseFlag": "2",
+                    "tax": "-" + str(detail["tax"]),
+                    "exciseRateName": "",
+                    "qty": "-" + str(detail["qty"]),
+                    "exciseTax": "",
+                    "total": "-" + str(detail["total"]),
+                    "discountTaxRate": "",
+                    "goodsCategoryId": str(detail["goodsCategoryId"]),
+                    "exciseRule": "",
+                    "deemedFlag": "2",
+                    "discountTotal": "",
+                    "categoryId": "",
+                    "unitOfMeasure": str(detail["unitOfMeasure"]),
+                    "goodsCategoryName": str(detail["goodsCategoryName"]),
+                    "itemCode": str(detail["itemCode"]),
+                    "stick": "",
+                    "exciseCurrency": "",
+                    "unitPrice": str(detail["unitPrice"]),
+                    "discountFlag": str(detail["discountFlag"]),
+                    "exciseUnit": "",
+                    "item": str(detail["item"]),
+                    "pack": "",
+                }
+                self.credit_goods_details.append(credit_goods_detail)
+
+            for detail in self.invoice_payway_data:
+                credit_payway_detail = {
+                    "orderNumber": str(detail["orderNumber"]),
+                    "paymentAmount": "-" + str(detail["paymentAmount"]),
+                    "paymentMode": str(detail["paymentMode"]),
+                }
+                self.credit_payway_details.append(credit_payway_detail)
+
+            self.credit_summary_detail = {
+                "taxAmount": "-" + str(self.invoice_summary_data["taxAmount"]),
+                "modeCode": str(self.invoice_summary_data["modeCode"]),
+                "grossAmount": "-" + str(self.invoice_summary_data["grossAmount"]),
+                "remarks": str(self.invoice_summary_data["remarks"]),
+                "qrCode": str(self.invoice_summary_data["qrCode"]),
+                "itemCount": str(self.invoice_summary_data["itemCount"]),
+                "netAmount": "-" + str(self.invoice_summary_data["netAmount"]),
             }
 
             request_data = self.create_credit_note_json_data()
@@ -546,10 +578,10 @@ class TaxInvoiceHandler(InvoiceHandler):
             "source": "103",
             "remarks": self.invoice_code,
             "sellersReferenceNo": self.invoice_code,
-            "goodsDetails": self.goods_details,
-            "taxDetails": self.tax_details,
-            "summary": self.transaction_summary,
-            "payWay": self.payway,
+            "goodsDetails": self.credit_goods_details,
+            "taxDetails": self.credit_tax_details,
+            "summary": self.credit_summary_detail,
+            "payWay": self.credit_payway_details,
         }
         struct_logger.info(
             "create_credit_note_json_data",
@@ -683,6 +715,24 @@ class TaxInvoiceHandler(InvoiceHandler):
             self.tax_value = "0.18"
             self.tax_symbol = "01"
             self.tax_category = "Standard Rate"
+
+    def set_credit_tax_categories(self, tax_rate):
+        if tax_rate == "0.00":
+            self.tax_symbol = "02"
+            self.tax_rate = "0.00"
+            self.tax_value = "0.00"
+            self.tax_category = "exempt"
+        elif tax_rate == "0.18":
+            self.tax_rate = "0.18"
+            self.tax_value = "0.18"
+            self.tax_symbol = "01"
+            self.tax_category = "Standard Rate"
+
+        else:
+            self.tax_symbol = "03"
+            self.tax_rate = "0.00"
+            self.tax_value = "0.00"
+            self.tax_category = "exempt"
 
 
 def get_invoice_time():
