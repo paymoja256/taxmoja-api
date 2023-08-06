@@ -41,7 +41,7 @@ class InvoiceHandler:
                            )
         return new_invoice
 
-    async def send_invoice(self, db, invoice: TaxInvoiceOutgoing):
+    async def send_invoice(self, db, invoice: TaxInvoiceOutgoing, erp=''):
         """
         Sends the invoice to the RA, using
         1. converts request_data to format the RA expects
@@ -72,7 +72,7 @@ class InvoiceHandler:
                            invoice=invoice.instance_invoice_id,
                            status = invoice.response_data
                            )
-            request_data = await self.convert_request(db, request_invoice)
+            request_data = await self.convert_request(db, request_invoice, erp)
             if invoice.request_data:
                 invoice.request_data = request_data
                 invoice.status = InvoiceStatuses.SENDING

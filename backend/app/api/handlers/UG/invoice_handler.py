@@ -12,22 +12,20 @@ struct_logger = structlog.get_logger(__name__)
 
 
 class TaxInvoiceHandler(InvoiceHandler):
-
     def __init__(self, settings):
-
         self.invoice_code = None
         self.tax_invoice = {}
-        self.uga_tax_pin = settings['tax_pin']
+        self.uga_tax_pin = settings["tax_pin"]
         self.taxable_items = {}
         self.invoice_data = []
         self.buyer_details = {}
-        self.uga_email_address = settings['client_email']
-        self.uga_legal_name = settings['client_name']
-        self.uga_business_name = settings['client_name']
-        self.uga_address = settings['client_address']
-        self.uga_mobile_phone = settings['client_mobile']
-        self.uga_place_business = settings['client_address']
-        self.device_no = settings['efris_device_no']
+        self.uga_email_address = settings["client_email"]
+        self.uga_legal_name = settings["client_name"]
+        self.uga_business_name = settings["client_name"]
+        self.uga_address = settings["client_address"]
+        self.uga_mobile_phone = settings["client_mobile"]
+        self.uga_place_business = settings["client_address"]
+        self.device_no = settings["efris_device_no"]
         self.total_taxable_amount = 0
         self.total_gross_amount = 0
         self.total_net_amount = 0
@@ -39,35 +37,37 @@ class TaxInvoiceHandler(InvoiceHandler):
         self.request_time = get_invoice_time()
         self.request_data = {}
         self.response_data = {}
-        self.invoice_id = ''
-        self.invoice_number = ''
-        self.anti_fake_code = ''
-        self.qr_code = ''
-        self.upload_code = ''
-        self.upload_desc = ''
-        self.invoice_type = '1'
-        self.tax_symbol = '03'
+        self.invoice_id = ""
+        self.invoice_number = ""
+        self.anti_fake_code = ""
+        self.qr_code = ""
+        self.upload_code = ""
+        self.upload_desc = ""
+        self.invoice_type = "1"
+        self.tax_symbol = "03"
         self.tax_rate = "-"
         self.tax_value = "0.00"
         self.tax_category = "exempt"
         self.json_data = {}
         self.transaction_summary = {}
-        self.reason = ''
-        self.reason_code = ''
-        self.original_invoice_id = ''
+        self.reason = ""
+        self.reason_code = ""
+        self.original_invoice_id = ""
         self.api_response = None
         self.client = EFRIS(settings)
         self.credit_tax_details = []
         self.credit_goods_details = []
         self.credit_payway_details = []
-        self.original_invoice_code = ''
+        self.original_invoice_code = ""
 
-    async def convert_request(self, db, tax_invoice: TaxInvoiceIncomingSchema):
+    async def convert_request(self, db, tax_invoice: TaxInvoiceIncomingSchema, erp=''):
         await self.client.get_key_signature()
         self.taxable_items = tax_invoice.goods_details
         self.invoice_data = tax_invoice.invoice_details
         self.buyer_details = tax_invoice.buyer_details
-        self.original_invoice_id = tax_invoice.invoice_details.original_instance_invoice_id
+        self.original_invoice_id = (
+            tax_invoice.invoice_details.original_instance_invoice_id
+        )
         self.tax_invoice = tax_invoice
         self.validate_buyer_details()
 
@@ -75,37 +75,63 @@ class TaxInvoiceHandler(InvoiceHandler):
             return await self.create_credit_invoice(db)
 
         else:
+            return await self.create_normal_invoice(db,erp)
 
-            return await self.create_normal_invoice(db)
-
-    async def create_normal_invoice(self, db):
+    async def create_normal_invoice(self, db, erp=""):
+        struct_logger.info(event="create_normal_invoice", msg = "creating erp invoice", erp=erp)
         try:
-
             for taxable_item in self.taxable_items:
                 goods_code = taxable_item.good_code
                 quantity = taxable_item.quantity
                 sale_price = taxable_item.sale_price
-                proceed,tax_detail = await self.client.goods_inquiry(db, goods_code)
-                print(tax_detail)
-                if proceed:
-                    unit_price = sale_price
-                    total = float(unit_price) * float(quantity)
+                proceed, tax_detail = await self.client.goods_inquiry(db, goods_code)
+                struct_logger.info(
+                    event="create_normal_invoice",
+                    msg="getting goods enquiry",
+                    data=tax_detail,
+                )
+                if taxable_item.tax_category:
+                    is_zero_rate = "102"
+                    is_exempt = "102"
+                else:
                     is_zero_rate = tax_detail["isZeroRate"]
                     is_exempt = tax_detail["isExempt"]
-                    measure_unit = tax_detail["measureUnit"]
-                    self.set_tax_categories(is_exempt, is_zero_rate)
-                    net_amount = float(total) / (1 + float(self.tax_value))
-                    self.total_net_amount = self.total_net_amount + net_amount
-                    tax_amount = float(net_amount) * float(self.tax_value)
-                    self.total_taxable_amount = self.total_taxable_amount + tax_amount
-                    self.total_gross_amount = self.total_gross_amount + \
-                        float(total)
+                measure_unit = tax_detail["measureUnit"]
+                self.set_tax_categories(
+                    is_exempt, is_zero_rate, self.invoice_data.is_export
+                )
+                if proceed:
+                    if erp.upper()== "DEAR":
+                        net_price = float(taxable_item.sale_price)
+                        unit_price = round(
+                            (net_price + (net_price * float(self.tax_value))), 2
+                        )
+                        total = round(unit_price * quantity, 2)
+                        net_amount = round(total / 1.18, 2)
+                        tax_amount = round(net_amount * float(self.tax_value), 2)
+                        net_amount = round(total - tax_amount, 2)
+                        self.total_net_amount = self.total_net_amount + net_amount
+                        self.total_taxable_amount = (
+                            self.total_taxable_amount + tax_amount
+                        )
+                        self.total_gross_amount = self.total_gross_amount + total
+                    else:
+                        unit_price = sale_price
+                        total = float(unit_price) * float(quantity)
+                        net_amount = float(total) / (1 + float(self.tax_value))
+                        self.total_net_amount = self.total_net_amount + net_amount
+                        tax_amount = float(net_amount) * float(self.tax_value)
+                        self.total_taxable_amount = (
+                            self.total_taxable_amount + tax_amount
+                        )
+                        self.total_gross_amount = self.total_gross_amount + float(total)
+
                     goods_detail = {
                         "item": tax_detail["goodsName"],
                         "itemCode": tax_detail["goodsCode"],
                         "qty": quantity,
                         "unitOfMeasure": measure_unit,
-                        "unitPrice": sale_price,
+                        "unitPrice": "{:.2f}".format(unit_price),
                         "total": "{:.2f}".format(total),
                         "taxRate": self.tax_rate,
                         "tax": "{:.2f}".format(tax_amount),
@@ -126,7 +152,7 @@ class TaxInvoiceHandler(InvoiceHandler):
                         "stick": "",
                         "exciseUnit": "",
                         "exciseCurrency": "",
-                        "exciseRateName": ""
+                        "exciseRateName": "",
                     }
                     tax_detail = {
                         "taxCategoryCode": self.tax_symbol,
@@ -136,22 +162,26 @@ class TaxInvoiceHandler(InvoiceHandler):
                         "grossAmount": "{:.2f}".format(total),
                         "exciseUnit": "",
                         "exciseCurrency": "",
-                        "taxRateName": self.tax_category
+                        "taxRateName": self.tax_category,
                     }
                     item_payway = {
                         "paymentMode": "101",
                         "paymentAmount": "{:.2f}".format(total),
-                        "orderNumber": self.item_count
+                        "orderNumber": self.item_count,
                     }
                     self.item_count = self.item_count + 1
                     self.item_no = self.item_no + 1
                     self.goods_details.append(goods_detail)
                     self.tax_details.append(tax_detail)
                     self.payway.append(item_payway)
-              
+
                 else:
-                    struct_logger.error(event='convert_request', api="efris", item=goods_code,
-                                        message='item tax details not successfully retrieved from UG')
+                    struct_logger.error(
+                        event="convert_request",
+                        api="efris",
+                        item=goods_code,
+                        message="item tax details not successfully retrieved from UG",
+                    )
                     return None
 
             self.transaction_summary = {
@@ -161,7 +191,7 @@ class TaxInvoiceHandler(InvoiceHandler):
                 "itemCount": str(self.item_count),
                 "modeCode": "1",
                 "remarks": self.invoice_data.goods_description,
-                "qrCode": ""
+                "qrCode": "",
             }
 
             request_data = self.create_normal_invoice_json_data()
@@ -169,48 +199,55 @@ class TaxInvoiceHandler(InvoiceHandler):
             return request_data
 
         except Exception as ex:
-            struct_logger.error(event='post_normal_invoice',
-                                msg='failed to create UG invoice..',
-                                error=str(ex))
-            raise HTTPException(status_code=404,
-                                detail="Unable to create request data in Efris api for invoice {}".format(
-                                    self.tax_invoice.instance_invoice_id))
+            struct_logger.error(
+                event="post_normal_invoice",
+                msg="failed to create UG invoice..",
+                error=str(ex),
+            )
+            raise HTTPException(
+                status_code=404,
+                detail="Unable to create request data in Efris api for invoice {}".format(
+                    self.tax_invoice.instance_invoice_id
+                ),
+            )
 
     async def create_credit_invoice(self, db):
-
         try:
             self.reason_code = self.invoice_data.return_reason_code
             self.reason = self.invoice_data.return_reason
             self.invoice_code = self.invoice_data.invoice_code
-            self.invoice_type = '2'
+            self.invoice_type = "2"
             self.original_invoice_code = self.invoice_data.original_instance_invoice_id
             # self.db_invoice = get_invoice_by_code(db, self.original_instance_invoice_id)
-            invoice_details = await self.client.all_invoice_query(self.original_invoice_code)
-            invoice_no = invoice_details['invoiceNo']
+            invoice_details = await self.client.all_invoice_query(
+                self.original_invoice_code
+            )
+            invoice_no = invoice_details["invoiceNo"]
             self.invoice_data = await self.client.get_invoice_details(invoice_no)
-            struct_logger.info(event="post_credit_note",
-                               invoice_data=self.invoice_data,
-                               message="Retrieved from api: {}".format(self.invoice_code))
+            struct_logger.info(
+                event="post_credit_note",
+                invoice_data=self.invoice_data,
+                message="Retrieved from api: {}".format(self.invoice_code),
+            )
 
-            self.seller_details = self.invoice_data['sellerDetails']
-            self.buyer_details = self.invoice_data['buyerDetails']
-            self.invoice_tax_details = self.invoice_data['taxDetails']
-            self.invoice_good_details = self.invoice_data['goodsDetails']
-            self.invoice_payway_data = self.invoice_data['payWay']
-            self.invoice_summary_data = self.invoice_data['summary']
-            self.invoice_basic_data = self.invoice_data['basicInformation']
-            self.efris_related_invoice_number = self.invoice_basic_data['invoiceNo']
-            self.efris_related_invoice_id = self.invoice_basic_data['invoiceId']
-            self.currency = self.invoice_basic_data['currency']
-            self.buyer_type = self.invoice_data['buyerDetails']['buyerType']
+            self.seller_details = self.invoice_data["sellerDetails"]
+            self.buyer_details = self.invoice_data["buyerDetails"]
+            self.invoice_tax_details = self.invoice_data["taxDetails"]
+            self.invoice_good_details = self.invoice_data["goodsDetails"]
+            self.invoice_payway_data = self.invoice_data["payWay"]
+            self.invoice_summary_data = self.invoice_data["summary"]
+            self.invoice_basic_data = self.invoice_data["basicInformation"]
+            self.efris_related_invoice_number = self.invoice_basic_data["invoiceNo"]
+            self.efris_related_invoice_id = self.invoice_basic_data["invoiceId"]
+            self.currency = self.invoice_basic_data["currency"]
+            self.buyer_type = self.invoice_data["buyerDetails"]["buyerType"]
 
             for taxable_item in self.taxable_items:
                 goods_code = taxable_item.good_code
                 quantity = taxable_item.quantity
                 sale_price = taxable_item.sale_price
-                proceed,tax_detail = await self.client.goods_inquiry(db, goods_code)
-                struct_logger.info(event="goods_inquiry",
-                                   tax_detail=tax_detail)
+                proceed, tax_detail = await self.client.goods_inquiry(db, goods_code)
+                struct_logger.info(event="goods_inquiry", tax_detail=tax_detail)
                 if tax_detail:
                     unit_price = sale_price
                     total = float(unit_price) * float(quantity)
@@ -222,8 +259,7 @@ class TaxInvoiceHandler(InvoiceHandler):
                     self.total_net_amount = self.total_net_amount + net_amount
                     tax_amount = float(net_amount) * float(self.tax_value)
                     self.total_taxable_amount = self.total_taxable_amount + tax_amount
-                    self.total_gross_amount = self.total_gross_amount + \
-                        float(total)
+                    self.total_gross_amount = self.total_gross_amount + float(total)
                     goods_detail = {
                         "item": tax_detail["goodsName"],
                         "itemCode": tax_detail["goodsCode"],
@@ -250,7 +286,7 @@ class TaxInvoiceHandler(InvoiceHandler):
                         "stick": "",
                         "exciseUnit": "",
                         "exciseCurrency": "",
-                        "exciseRateName": ""
+                        "exciseRateName": "",
                     }
                     tax_detail = {
                         "taxCategoryCode": self.tax_symbol,
@@ -260,12 +296,12 @@ class TaxInvoiceHandler(InvoiceHandler):
                         "grossAmount": "-" + "{:.2f}".format(total),
                         "exciseUnit": "",
                         "exciseCurrency": "",
-                        "taxRateName": self.tax_category
+                        "taxRateName": self.tax_category,
                     }
                     item_payway = {
                         "paymentMode": "101",
                         "paymentAmount": "-" + "{:.2f}".format(total),
-                        "orderNumber": self.item_count
+                        "orderNumber": self.item_count,
                     }
                     self.item_count = self.item_count + 1
                     self.item_no = self.item_no + 1
@@ -273,11 +309,17 @@ class TaxInvoiceHandler(InvoiceHandler):
                     self.tax_details.append(tax_detail)
                     self.payway.append(item_payway)
                 else:
-                    struct_logger.error(event='convert_request', api="efris", item=goods_code,
-                                        message='item tax details not successfully retrieved from UG')
-                    raise HTTPException(status_code=404, detail="Unable to create request data in Efris api for "
-                                                                "invoice {}".format(
-                                                                    self.tax_invoice.instance_invoice_id))
+                    struct_logger.error(
+                        event="convert_request",
+                        api="efris",
+                        item=goods_code,
+                        message="item tax details not successfully retrieved from UG",
+                    )
+                    raise HTTPException(
+                        status_code=404,
+                        detail="Unable to create request data in Efris api for "
+                        "invoice {}".format(self.tax_invoice.instance_invoice_id),
+                    )
 
             self.transaction_summary = {
                 "netAmount": "-" + "{:.2f}".format(self.total_net_amount),
@@ -286,7 +328,7 @@ class TaxInvoiceHandler(InvoiceHandler):
                 "itemCount": str(self.item_count),
                 "modeCode": "1",
                 "remarks": str(self.original_invoice_code),
-                "qrCode": ""
+                "qrCode": "",
             }
 
             request_data = self.create_credit_note_json_data()
@@ -294,28 +336,36 @@ class TaxInvoiceHandler(InvoiceHandler):
             return request_data
 
         except Exception as ex:
-            struct_logger.error(event='post_credit note',
-                                msg='failed to create UG invoice..',
-                                error=str(ex))
-            raise HTTPException(status_code=404,
-                                detail="Unable to create request data in Efris api for credit note{}".format(
-                                    self.tax_invoice.instance_invoice_id))
+            struct_logger.error(
+                event="post_credit note",
+                msg="failed to create UG invoice..",
+                error=str(ex),
+            )
+            raise HTTPException(
+                status_code=404,
+                detail="Unable to create request data in Efris api for credit note{}".format(
+                    self.tax_invoice.instance_invoice_id
+                ),
+            )
 
     async def create_credit_invoice_2(self, db):
-
         try:
             self.reason_code = self.invoice_data.return_reason_code
             self.reason = self.invoice_data.return_reason
             self.invoice_code = self.invoice_data.invoice_code
-            self.invoice_type = '2'
+            self.invoice_type = "2"
             self.original_invoice_code = self.invoice_data.original_instance_invoice_id
             # self.db_invoice = get_invoice_by_code(db, self.original_instance_invoice_id)
-            invoice_details = await self.client.all_invoice_query(self.original_invoice_code)
-            invoice_no = invoice_details['invoiceNo']
+            invoice_details = await self.client.all_invoice_query(
+                self.original_invoice_code
+            )
+            invoice_no = invoice_details["invoiceNo"]
             self.invoice_data = await self.client.get_invoice_details(invoice_no)
-            struct_logger.info(event="post_credit_note",
-                               invoice_data=self.invoice_data,
-                               message="Retrieved from api: {}".format(self.invoice_code))
+            struct_logger.info(
+                event="post_credit_note",
+                invoice_data=self.invoice_data,
+                message="Retrieved from api: {}".format(self.invoice_code),
+            )
             # invoice_details = await self.client.all_invoice_query(self.original_invoice_code)
             # invoice_no = invoice_details['invoiceNo']
             # self.invoice_data = await self.client.get_invoice_details(invoice_no)
@@ -329,17 +379,17 @@ class TaxInvoiceHandler(InvoiceHandler):
             #                        message="Retrieved from database: {}".format(self.invoice_code))
             # else:
 
-            self.seller_details = self.invoice_data['sellerDetails']
-            self.buyer_details = self.invoice_data['buyerDetails']
-            self.invoice_tax_details = self.invoice_data['taxDetails']
-            self.invoice_good_details = self.invoice_data['goodsDetails']
-            self.invoice_payway_data = self.invoice_data['payWay']
-            self.invoice_summary_data = self.invoice_data['summary']
-            self.invoice_basic_data = self.invoice_data['basicInformation']
-            self.efris_related_invoice_number = self.invoice_basic_data['invoiceNo']
-            self.efris_related_invoice_id = self.invoice_basic_data['invoiceId']
-            self.currency = self.invoice_basic_data['currency']
-            self.buyer_type = self.invoice_data['buyerDetails']['buyerType']
+            self.seller_details = self.invoice_data["sellerDetails"]
+            self.buyer_details = self.invoice_data["buyerDetails"]
+            self.invoice_tax_details = self.invoice_data["taxDetails"]
+            self.invoice_good_details = self.invoice_data["goodsDetails"]
+            self.invoice_payway_data = self.invoice_data["payWay"]
+            self.invoice_summary_data = self.invoice_data["summary"]
+            self.invoice_basic_data = self.invoice_data["basicInformation"]
+            self.efris_related_invoice_number = self.invoice_basic_data["invoiceNo"]
+            self.efris_related_invoice_id = self.invoice_basic_data["invoiceId"]
+            self.currency = self.invoice_basic_data["currency"]
+            self.buyer_type = self.invoice_data["buyerDetails"]["buyerType"]
 
             for detail in self.invoice_tax_details:
                 credit_tax_detail = {
@@ -350,7 +400,7 @@ class TaxInvoiceHandler(InvoiceHandler):
                     "taxRateName": str(detail["taxRateName"]),
                     "taxCategoryCode": str(detail["taxCategoryCode"]),
                     "exciseCurrency": "",
-                    "netAmount": "-" + str(detail["netAmount"])
+                    "netAmount": "-" + str(detail["netAmount"]),
                 }
                 self.credit_tax_details.append(credit_tax_detail)
 
@@ -380,7 +430,7 @@ class TaxInvoiceHandler(InvoiceHandler):
                     "discountFlag": str(detail["discountFlag"]),
                     "exciseUnit": "",
                     "item": str(detail["item"]),
-                    "pack": ""
+                    "pack": "",
                 }
                 self.credit_goods_details.append(credit_goods_detail)
 
@@ -388,7 +438,7 @@ class TaxInvoiceHandler(InvoiceHandler):
                 credit_payway_detail = {
                     "orderNumber": str(detail["orderNumber"]),
                     "paymentAmount": "-" + str(detail["paymentAmount"]),
-                    "paymentMode": str(detail["paymentMode"])
+                    "paymentMode": str(detail["paymentMode"]),
                 }
                 self.credit_payway_details.append(credit_payway_detail)
 
@@ -399,7 +449,7 @@ class TaxInvoiceHandler(InvoiceHandler):
                 "remarks": str(self.invoice_summary_data["remarks"]),
                 "qrCode": str(self.invoice_summary_data["qrCode"]),
                 "itemCount": str(self.invoice_summary_data["itemCount"]),
-                "netAmount": "-" + str(self.invoice_summary_data["netAmount"])
+                "netAmount": "-" + str(self.invoice_summary_data["netAmount"]),
             }
 
             request_data = self.create_credit_note_json_data()
@@ -407,12 +457,17 @@ class TaxInvoiceHandler(InvoiceHandler):
             return request_data
 
         except Exception as ex:
-            struct_logger.error(event='post_normal_invoice',
-                                msg='failed to create UG invoice..',
-                                error=str(ex))
-            raise HTTPException(status_code=404,
-                                detail="Unable to create request data in Efris api for invoice {}".format(
-                                    self.tax_invoice.instance_invoice_id))
+            struct_logger.error(
+                event="post_normal_invoice",
+                msg="failed to create UG invoice..",
+                error=str(ex),
+            )
+            raise HTTPException(
+                status_code=404,
+                detail="Unable to create request data in Efris api for invoice {}".format(
+                    self.tax_invoice.instance_invoice_id
+                ),
+            )
 
     def create_normal_invoice_json_data(self):
         if self.invoice_data.goods_description:
@@ -429,7 +484,7 @@ class TaxInvoiceHandler(InvoiceHandler):
                 "linePhone": self.uga_mobile_phone,
                 "emailAddress": self.uga_email_address,
                 "placeOfBusiness": self.uga_place_business,
-                "referenceNo":  str(self.invoice_data.invoice_code)
+                "referenceNo": str(self.invoice_data.invoice_code),
             },
             "basicInformation": {
                 "invoiceNo": "",
@@ -443,7 +498,7 @@ class TaxInvoiceHandler(InvoiceHandler):
                 "invoiceKind": str(self.invoice_data.invoice_kind),
                 "dataSource": "103",
                 "invoiceIndustryCode": str(self.invoice_data.industry_code),
-                "isBatch": ""
+                "isBatch": "",
             },
             "buyerDetails": {
                 "buyerTin": str(self.buyer_details.tax_pin),
@@ -465,44 +520,46 @@ class TaxInvoiceHandler(InvoiceHandler):
             "taxDetails": self.tax_details,
             "summary": self.transaction_summary,
             "payWay": self.payway,
-            "extend": {
-                "reason": self.reason,
-                "reasonCode": self.reason_code
-            }
-
+            "extend": {"reason": self.reason, "reasonCode": self.reason_code},
         }
 
-        struct_logger.info('create_normal_json_data', msg='created json data for invoice note',
-                           data=self.json_data)
+        struct_logger.info(
+            "create_normal_json_data",
+            msg="created json data for invoice note",
+            data=self.json_data,
+        )
 
         return self.json_data
 
     def create_credit_note_json_data(self):
-        self.json_data = {"oriInvoiceId": str(self.invoice_basic_data["invoiceId"]),
-                          "oriInvoiceNo": str(self.invoice_basic_data["invoiceNo"]),
-                          "reasonCode": str(self.reason_code),
-                          "reason": str(self.reason),
-                          "applicationTime": str(self.request_time),
-                          "invoiceApplyCategoryCode": "101",
-                          "currency": str(self.invoice_basic_data["currency"]),
-                          "contactName": "",
-                          "contactMobileNum": "",
-                          "contactEmail": "",
-                          "source": "103",
-                          "remarks": self.invoice_code,
-                          "sellersReferenceNo": self.invoice_code,
-                          "goodsDetails": self.goods_details,
-                          "taxDetails": self.tax_details,
-                          "summary": self.transaction_summary,
-                          "payWay": self.payway
-                          }
-        struct_logger.info('create_credit_note_json_data', msg='created json data for credit note',
-                           data=self.json_data)
+        self.json_data = {
+            "oriInvoiceId": str(self.invoice_basic_data["invoiceId"]),
+            "oriInvoiceNo": str(self.invoice_basic_data["invoiceNo"]),
+            "reasonCode": str(self.reason_code),
+            "reason": str(self.reason),
+            "applicationTime": str(self.request_time),
+            "invoiceApplyCategoryCode": "101",
+            "currency": str(self.invoice_basic_data["currency"]),
+            "contactName": "",
+            "contactMobileNum": "",
+            "contactEmail": "",
+            "source": "103",
+            "remarks": self.invoice_code,
+            "sellersReferenceNo": self.invoice_code,
+            "goodsDetails": self.goods_details,
+            "taxDetails": self.tax_details,
+            "summary": self.transaction_summary,
+            "payWay": self.payway,
+        }
+        struct_logger.info(
+            "create_credit_note_json_data",
+            msg="created json data for credit note",
+            data=self.json_data,
+        )
 
         return self.json_data
 
     def _send_invoice(self, request_data):
-      
         if self.original_invoice_id:
             return self.client.credit_note_upload(request_data)
         return self.client.send_invoice(request_data)
@@ -511,82 +568,84 @@ class TaxInvoiceHandler(InvoiceHandler):
         is_success = False
 
         try:
-            if hasattr(response, 'get'):
-                basicInformation = response.get('basicInformation', None)
+            if hasattr(response, "get"):
+                basicInformation = response.get("basicInformation", None)
                 if basicInformation:
-                    self.invoice_id = basicInformation['invoiceId']
-                    self.invoice_number = basicInformation['invoiceNo']
-                    self.anti_fake_code = basicInformation['antifakeCode']
-                    self.qr_code = response['summary']['qrCode']
-                    self.upload_code = '200'
-                    self.upload_desc = 'SUCCESS'
+                    self.invoice_id = basicInformation["invoiceId"]
+                    self.invoice_number = basicInformation["invoiceNo"]
+                    self.anti_fake_code = basicInformation["antifakeCode"]
+                    self.qr_code = response["summary"]["qrCode"]
+                    self.upload_code = "200"
+                    self.upload_desc = "SUCCESS"
                     self.generate_qr_code(
-                        self.qr_code, 'UG', self.client.t_pin, self.anti_fake_code)
-                    struct_logger.info(event='processing UG invoice',
-                                       invoice=str(self.invoice_id),
-                                       upload_code=self.upload_code,
-                                       upload_desc=self.upload_desc,
-                                       response=self.response_data
-                                       )
+                        self.qr_code, "UG", self.client.t_pin, self.anti_fake_code
+                    )
+                    struct_logger.info(
+                        event="processing UG invoice",
+                        invoice=str(self.invoice_id),
+                        upload_code=self.upload_code,
+                        upload_desc=self.upload_desc,
+                        response=self.response_data,
+                    )
 
                     is_success = True
 
         except Exception as ex:
-
-            struct_logger.error(event='processing UG invoice',
-                                response=response,
-                                error=ex,
-                                msg='uploading UG invoice failed...',
-                                )
+            struct_logger.error(
+                event="processing UG invoice",
+                response=response,
+                error=ex,
+                msg="uploading UG invoice failed...",
+            )
 
         return is_success, response
 
     async def cancel_invoice(self, tax_invoice: CreditNoteCancelSchema):
-
         """Get invoice status from database"""
-        return self.client.credit_note_cancellation(tax_invoice.original_invoice_id, tax_invoice.credit_note_fdn)
+        return self.client.credit_note_cancellation(
+            tax_invoice.original_invoice_id, tax_invoice.credit_note_fdn
+        )
 
-    async def get_invoice_by_instance_id(self, db,
-                                         instance_invoice_id,
-                                         country_code,
-                                         tax_id):
-
+    async def get_invoice_by_instance_id(
+        self, db, instance_invoice_id, country_code, tax_id
+    ):
         """Get invoice from database"""
 
         await self.client.get_key_signature()
 
         invoice_details = await self.client.all_invoice_query(instance_invoice_id)
-        invoice_no = invoice_details['invoiceNo']
+        invoice_no = invoice_details["invoiceNo"]
         self.invoice_data = await self.client.get_invoice_details(invoice_no)
-        struct_logger.info(event="get_invoice_data",
-                           invoice_data=self.invoice_data,
-                           message="Retrieved from api: {}".format(instance_invoice_id))
+        struct_logger.info(
+            event="get_invoice_data",
+            invoice_data=self.invoice_data,
+            message="Retrieved from api: {}".format(instance_invoice_id),
+        )
 
-        basicInformation = self.invoice_data.get('basicInformation', None)
+        basicInformation = self.invoice_data.get("basicInformation", None)
         if basicInformation:
-            anti_fake_code = basicInformation['antifakeCode']
-            qr_code = self.invoice_data['summary']['qrCode']
+            anti_fake_code = basicInformation["antifakeCode"]
+            qr_code = self.invoice_data["summary"]["qrCode"]
 
-            self.generate_qr_code(qr_code, country_code,
-                                  tax_id, anti_fake_code)
+            self.generate_qr_code(qr_code, country_code, tax_id, anti_fake_code)
 
         return self.invoice_data
 
-    async def get_invoice_by_instance_id_query(self, db,
-                                         instance_invoice_id,
-                                         country_code,
-                                         tax_id):
-
+    async def get_invoice_by_instance_id_query(
+        self, db, instance_invoice_id, country_code, tax_id
+    ):
         """Get invoice from database"""
 
         await self.client.get_key_signature()
 
         invoice_details = await self.client.all_invoice_query(instance_invoice_id)
-        invoice_no = invoice_details['invoiceNo']
+        invoice_no = invoice_details["invoiceNo"]
         self.invoice_data = await self.client.get_invoice_details(invoice_no)
-        struct_logger.info(event="get_invoice_data",
-                           invoice_data=self.invoice_data,
-                           message="Retrieved from api: {}".format(instance_invoice_id))
+        struct_logger.info(
+            event="get_invoice_data",
+            invoice_data=self.invoice_data,
+            message="Retrieved from api: {}".format(instance_invoice_id),
+        )
 
         # basicInformation = self.invoice_data.get('basicInformation', None)
         # if basicInformation:
@@ -598,34 +657,38 @@ class TaxInvoiceHandler(InvoiceHandler):
 
         return self.invoice_data
 
-    
     def validate_buyer_details(self):
-
-        if self.buyer_details.buyer_type in ('0', '2', '3'):
+        if self.buyer_details.buyer_type in ("0", "2", "3"):
             if not clean_tax_pin(self.buyer_details.tax_pin):
                 return "Invalid tax pin for non Business to Consumer transaction"
 
-    def set_tax_categories(self, is_exempt, zero_rate):
-
-        if is_exempt == "101":
-            self.tax_symbol = '03'
+    def set_tax_categories(self, is_exempt, zero_rate, is_export=False):
+        if is_export:
+            self.tax_symbol = "02"
+            self.tax_rate = "0.00"
+            self.tax_value = "0.00"
+            self.tax_category = "exempt"
+        elif is_exempt == "101":
+            self.tax_symbol = "03"
             self.tax_rate = "-"
             self.tax_value = "0.00"
             self.tax_category = "exempt"
         elif zero_rate == "101":
             self.tax_rate = "0.00"
-            self.tax_symbol = '02'
+            self.tax_symbol = "02"
             self.tax_category = "Zero Rate"
             self.tax_value = "0.00"
         else:
             self.tax_rate = "0.18"
             self.tax_value = "0.18"
-            self.tax_symbol = '01'
+            self.tax_symbol = "01"
             self.tax_category = "Standard Rate"
 
 
 def get_invoice_time():
-    return datetime.datetime.now(tz=pytz.timezone('Africa/Kampala')).strftime("%Y-%m-%d %H:%M:%S.%f")
+    return datetime.datetime.now(tz=pytz.timezone("Africa/Kampala")).strftime(
+        "%Y-%m-%d %H:%M:%S.%f"
+    )
 
 
 def clean_tax_pin(tax_pin):
@@ -639,14 +702,13 @@ def clean_tax_pin(tax_pin):
 
 
 def clean_invoice_type(invoice_type):
-    if invoice_type in ('1', 'normal', 'Normal', 'receipt'):
+    if invoice_type in ("1", "normal", "Normal", "receipt"):
         return 1
 
-    elif invoice_type in ('2', 'credit'):
-        
+    elif invoice_type in ("2", "credit"):
         return 2
 
-    elif invoice_type in ('5', 'memo'):
+    elif invoice_type in ("5", "memo"):
         return 5
     else:
         return 1
