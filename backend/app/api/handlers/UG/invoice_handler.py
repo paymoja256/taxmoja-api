@@ -220,7 +220,7 @@ class TaxInvoiceHandler(InvoiceHandler):
         try:
             self.reason_code = self.invoice_data.return_reason_code
             self.reason = self.invoice_data.return_reason
-            credit_note_goods = self.taxable_items
+            
             self.invoice_code = self.invoice_data.invoice_code
             self.invoice_type = "2"
             self.original_invoice_code = self.invoice_data.original_instance_invoice_id
@@ -238,8 +238,13 @@ class TaxInvoiceHandler(InvoiceHandler):
 
             self.seller_details = self.invoice_data["sellerDetails"]
             self.buyer_details = self.invoice_data["buyerDetails"]
-            self.invoice_tax_details = []
             invoice_good_details = self.invoice_data["goodsDetails"]
+            if self.taxable_items:
+             credit_note_goods = self.taxable_items
+            else:
+             credit_note_goods = invoice_good_details
+
+            
             for credit_good in credit_note_goods:
                 credit_item_code = credit_good.good_code
                 for invoice_good in invoice_good_details:
