@@ -13,6 +13,7 @@ struct_logger = structlog.get_logger(__name__)
 
 class TaxInvoiceHandler(InvoiceHandler):
     def __init__(self, settings):
+        self.invoice_tax_details=[]
         self.invoice_code = None
         self.tax_invoice = {}
         self.uga_tax_pin = settings["tax_pin"]
