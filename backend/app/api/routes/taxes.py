@@ -139,6 +139,24 @@ async def query_incoming_invoice(
     except Exception as ex:
         raise HTTPException(status_code=404, detail=str(ex))
 
+@router.get(
+    "/creditnote/query", name="credit note:query-credit note"
+)
+async def query_credit_notes(
+    tax_service=Depends(get_tax_service),
+):
+    try:
+        request_data = await tax_service.query_credit_notes()
+        
+
+        struct_logger.info(
+            event="Query credit notes", message=request_data
+        )
+
+        return request_data
+    except Exception as ex:
+        raise HTTPException(status_code=404, detail=str(ex))
+    
 
 @router.get("/information/{information_request}")
 async def incoming_information_request(

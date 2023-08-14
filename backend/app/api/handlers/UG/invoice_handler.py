@@ -643,6 +643,11 @@ class TaxInvoiceHandler(InvoiceHandler):
         return self.client.credit_note_cancellation(
             tax_invoice.original_invoice_id, tax_invoice.credit_note_fdn
         )
+    
+    async def credit_note_query(self):
+        """Get invoice status from database"""
+        await self.client.get_key_signature()
+        return await self.client.credit_debit_query()
 
     async def get_invoice_by_instance_id(
         self, db, instance_invoice_id, country_code, tax_id
