@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 
 
 def get_database() -> Generator:
-    Session = sessionmaker(bind=SQL_ENGINE, autocommit=True, expire_on_commit=False, )
+    Session = sessionmaker(bind=SQL_ENGINE, expire_on_commit=False)
     return Session
 
 
