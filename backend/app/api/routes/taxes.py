@@ -30,6 +30,7 @@ async def incoming_stock_configuration(
         message = await stock_service.send_stock_configuration(
             session, stock_configuration_saved
         )
+
         status_code = "200"
     except Exception as ex:
         message = str(ex)
@@ -90,7 +91,7 @@ async def incoming_invoice_queue(
         )
 
         async def send_new_invoice():
-            await invoice_service.send_invoice(session, tax_invoice_saved,erp)
+            await invoice_service.send_invoice(session, tax_invoice_saved, erp)
 
         background_tasks.add_task(send_new_invoice)
         message = "invoice sent for processing"
@@ -139,6 +140,7 @@ async def query_incoming_invoice(
     except Exception as ex:
         raise HTTPException(status_code=404, detail=str(ex))
 
+
 @router.get(
     "/creditnote/query", name="credit note:query-credit note"
 )
@@ -147,7 +149,6 @@ async def query_credit_notes(
 ):
     try:
         request_data = await tax_service.query_credit_notes()
-        
 
         struct_logger.info(
             event="Query credit notes", message=request_data
@@ -156,7 +157,7 @@ async def query_credit_notes(
         return request_data
     except Exception as ex:
         raise HTTPException(status_code=404, detail=str(ex))
-    
+
 
 @router.get("/information/{information_request}")
 async def incoming_information_request(
@@ -164,7 +165,7 @@ async def incoming_information_request(
     information_service=Depends(get_tax_service),
 ):
     try:
-        print(information_service)
+      
         message = await information_service.incoming_information_request(
             information_request
         )
@@ -190,7 +191,8 @@ async def print_invoice(
         struct_logger.info(
             event="retrieved invoice from database", message=printed_invoice
         )
-        invoice_data = {**printed_invoice.request_data, **printed_invoice.response_data}
+        invoice_data = {**printed_invoice.request_data,
+                        **printed_invoice.response_data}
 
         from pathlib import Path
 
@@ -205,7 +207,8 @@ async def print_invoice(
         struct_logger.info(event="print_invoice", message=invoice_data)
 
         return jinja_templates.TemplateResponse(
-            "/invoices/invoice_template_{}.html".format(x_tax_country_code.lower()),
+            "/invoices/invoice_template_{}.html".format(
+                x_tax_country_code.lower()),
             {
                 "request": invoice_data,
                 "tax_pin": x_tax_id,
@@ -248,7 +251,8 @@ async def print_credit_note(
         struct_logger.info(event="print_invoice", message=invoice_data)
 
         return jinja_templates.TemplateResponse(
-            "/invoices/invoice_template_{}.html".format(x_tax_country_code.lower()),
+            "/invoices/invoice_template_{}.html".format(
+                x_tax_country_code.lower()),
             {
                 "request": invoice_data,
                 "tax_pin": x_tax_id,

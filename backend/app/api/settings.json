@@ -104,7 +104,7 @@
         "client_mobile": "0706746530",
         "online_mode": "True",
         "private_key": "/Applications/MAMP/htdocs/paymoja efris/fastapi/mita/api/efris/keys/1003841291/key.p12",
-        "private_key_password": "Str@767*#",
+        "private_key_password": "vital",
         "invoice_country": "UG",
         "Description": "Vital Test Environment"
       },

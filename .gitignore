@@ -141,3 +141,5 @@ backend/app/api/static/metronic/demo1/.DS_Store
 *.png
 *.DS_Store
 backend/app/api/settings.json
+backend/app/api/.DS_Store
+backend/app/api/.DS_Store

@@ -33,6 +33,7 @@ class TaxStockHandler(StockHandler):
                 ]
             }
         ]
+
         return data
         # return await self.client.goods_upload(goods_detail)
 
@@ -49,7 +50,11 @@ class TaxStockHandler(StockHandler):
         return await self.client.stock_quantity_by_goods_id(goods_code)
 
     async def _upload_stock(self, request_data):
+        
+
         await self.client.get_key_signature()
+        
+
         return await self.client.goods_upload(request_data)
 
     def convert_response(self, response):

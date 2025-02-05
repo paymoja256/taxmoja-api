@@ -76,8 +76,10 @@ class TaxService:
     def create_stock_configuration(
         self, db, stock_configuration: IncomingStockConfigurationSchema
     ):
-        new_stock_config = self.stock_manager.create_outgoing_stock_configuration(
-            db, stock_configuration, self.country_code, self.tax_id
+        new_stock_config = (
+            self.stock_manager.create_outgoing_stock_configuration(
+                db, stock_configuration, self.country_code, self.tax_id
+            )
         )
         return new_stock_config
 
