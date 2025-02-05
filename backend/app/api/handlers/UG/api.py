@@ -16,6 +16,17 @@ from fastapi import HTTPException
 from app.api.handlers.UG.base import EfrisBase
 from app.models.stock_dal import get_stock_by_goods_code, create_stock, get_branch_by_client_id, create_stock_branch
 from app.db.schemas.stock import IncomingGoodsStockAdjustmentSchema, IncomingStockConfigurationSchema, BranchSchema
+from cryptography.hazmat.primitives.serialization import pkcs12
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.serialization import pkcs12, Encoding, PrivateFormat, NoEncryption
+from cryptography.hazmat.primitives.asymmetric import padding
+from cryptography.hazmat.primitives import hashes
+from base64 import b64encode
+from Crypto.PublicKey import RSA
+from Crypto.Cipher import PKCS1_v1_5, AES
+from Crypto.Util.Padding import unpad
+import base64
+
 
 struct_logger = structlog.get_logger(__name__)
 
@@ -139,15 +150,20 @@ class EFRIS(EfrisBase):
         """
         self.interface_code = 'T104'
         self.api_response = await self.efris_request_data(content='', signature='')
+
         try:
             data = json.loads(b64decode(self.api_response['data']['content']))
-            self.aes_password = self.key_decryption(
+            self.aes_password = self.key_decryption2(
                 b64decode(data['passowrdDes']))
+
             self.signature = data['sign']
             struct_logger.info(event="get_key_signature",
                                aes_password=self.aes_password, signature=self.signature)
             return self.aes_password
         except Exception as ex:
+
+            struct_logger.info(event="get_key_signature",
+                               message="failed to decode response", error=str(ex))
 
             return self.api_response
 
@@ -634,8 +650,9 @@ class EFRIS(EfrisBase):
         signature = self.sign_data(encrypted_content)
         api_response = await self.efris_request_data(content=encrypted_content, signature=signature)
         api_response = b64decode(api_response['data']['content'].encode())
-            # api_response = self.un_zip_data(api_response)
-        struct_logger.info(event=" online_mode_request_unzip", response=type(api_response), api_response=api_response)
+        # api_response = self.un_zip_data(api_response)
+        struct_logger.info(event=" online_mode_request_unzip", response=type(
+            api_response), api_response=api_response)
 
         return api_response
 
@@ -645,21 +662,53 @@ class EFRIS(EfrisBase):
             decrypted_content = self.aes_decryption(content)
             return decrypted_content
         except (KeyError, IndexError) as ex:
-            
+
             struct_logger.error(event="decrypt_efris_api_response", error='content missing or empty',
                                 api_response=api_response)
-           
+
             return api_response
 
-    def retrieve_private_key(self):
+    def retrieve_private_key_old(self):
         p12 = crypto.load_pkcs12(
             open(self.private_key, 'rb').read(), self.private_key_password)
         return crypto.dump_privatekey(crypto.FILETYPE_PEM, p12.get_privatekey())
+
+    def retrieve_private_key(self):
+        with open(self.private_key, "rb") as pfx_file:
+            pfx_data = pfx_file.read()
+
+        private_key, certificate, additional_certificates = pkcs12.load_key_and_certificates(
+            pfx_data, self.private_key_password.encode()
+        )
+
+        if private_key is None:
+            raise ValueError("No private key found in the PKCS#12 file")
+
+        return private_key.private_bytes(
+            encoding=serialization.Encoding.PEM,
+            format=serialization.PrivateFormat.TraditionalOpenSSL,
+            encryption_algorithm=serialization.NoEncryption()  # No password on private key
+        )
 
     def key_decryption(self, str_to_decrypt):
         rsa_key = RSA.importKey(self.retrieve_private_key())
         cipher = PKCS1_v1_5.new(rsa_key)
         return cipher.decrypt(str_to_decrypt, self.aes_password).decode()
+
+    def key_decryption2(self, str_to_decrypt):
+        # Step 1: Decrypt the AES key using RSA
+        # Your private RSA key
+        rsa_key = RSA.importKey(self.retrieve_private_key())
+        cipher_rsa = PKCS1_v1_5.new(rsa_key)
+
+        # Decode the Base64 ciphertext and use RSA to decrypt it
+        return cipher_rsa.decrypt(str_to_decrypt, None).decode()
+
+        # Step 2: Decrypt the actual data using AES
+        # cipher_aes = AES.new(aes_key, AES.MODE_CBC, iv=self.iv)  # Ensure 'self.iv' is available, or pass it
+        # decrypted_data = unpad(cipher_aes.decrypt(self.ciphertext), AES.block_size)
+
+        # return decrypted_data.decode()  # Return the decrypted data as a string
 
     def aes_encryption(self, content):
         content = pad(content)
@@ -677,12 +726,31 @@ class EFRIS(EfrisBase):
             print()
             return unpad(content.decode("utf-8"))
 
-    def sign_data(self, content):
+    def sign_data_old(self, content):
         p12 = crypto.load_pkcs12(
             open(self.private_key, 'rb').read(), self.private_key_password)
         priv_key = p12.get_privatekey()
         signature_bin_str = crypto.sign(priv_key, content, 'sha1')
         return b64encode(signature_bin_str).decode("utf-8")
+
+    def sign_data(self, content):
+        with open(self.private_key, "rb") as pfx_file:
+            pfx_data = pfx_file.read()
+
+        private_key, certificate, additional_certificates = pkcs12.load_key_and_certificates(
+            pfx_data, self.private_key_password.encode()
+        )
+
+        if private_key is None:
+            raise ValueError("No private key found in the PKCS#12 file")
+
+        signature = private_key.sign(
+            content.encode(),  # Ensure content is in bytes
+            padding.PKCS1v15(),
+            hashes.SHA1()
+        )
+
+        return b64encode(signature).decode("utf-8")
 
     @staticmethod
     def un_zip_data(data):
