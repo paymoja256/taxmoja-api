@@ -116,7 +116,7 @@ class ZRA(ZraBase):
         self.timestamp = ''
         current_path=pathlib.Path(__file__).parent.resolve()
         self.dll = "{}/libFiscalCode64.so".format(current_path)
-        print(current_path)
+        
         self.fiscal_code_obj = FiscalCode(self.dll)
         self.headers = {
             'Content-Type': "application/json;Charset=utf-8",

@@ -24,7 +24,7 @@ def get_configuration_settings():
 
     with open(file) as fin:
         struct_logger.info(event="get_configuration_settings", msg="settings file has been found")
-        print(fin)
+        
         return json.load(fin)
 
 

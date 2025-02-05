@@ -124,7 +124,7 @@ class EFRIS(EfrisBase):
         response = await self.api_request('post', request_data)
         struct_logger.info(event='efris_request_data',
                            message="sending efris api request",
-                           response=response.content
+                           response=response
 
                            )
         try:
@@ -132,7 +132,7 @@ class EFRIS(EfrisBase):
         except Exception as e:
             struct_logger.error(event='efris_request_data',
                                 message="failed to decode response",
-                                response=response.content,
+                                response=response,
                                 error=e
                                 )
             return response
@@ -723,7 +723,7 @@ class EFRIS(EfrisBase):
         except Exception:
 
             struct_logger.info(event="aes_decryption", msg=str(type(content)))
-            print()
+        
             return unpad(content.decode("utf-8"))
 
     def sign_data_old(self, content):
