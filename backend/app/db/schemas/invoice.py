@@ -72,7 +72,7 @@ class TaxInvoiceIncomingSchema(CoreModel):
     invoice_details: InvoiceDetailsSchema
     buyer_details: BuyerDetailsSchema
     goods_details: List[InvoiceGoodSchema]
-    attachments: Optional[List[InvoiceAttachmentSchema]]
+    attachments: Optional[List[InvoiceAttachmentSchema]]=[]
     instance_invoice_id: str
     country_code: Optional[str] = 'UG'
     status: Optional[InvoiceStatuses] = 'RECEIVED'
