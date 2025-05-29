@@ -64,6 +64,7 @@ class TaxInvoiceHandler(InvoiceHandler):
         self.original_invoice_code = ""
         self.credit_summary_detail = {}
         self.attachments = []
+        self.industry_code ="101"
 
     async def convert_request(self, db, tax_invoice: TaxInvoiceIncomingSchema, erp=""):
         await self.client.get_key_signature()
@@ -451,7 +452,7 @@ class TaxInvoiceHandler(InvoiceHandler):
                 "invoiceType": clean_invoice_type(str(self.invoice_data.invoice_type)),
                 "invoiceKind": str(self.invoice_data.invoice_kind),
                 "dataSource": "103",
-                "invoiceIndustryCode": str(self.invoice_data.industry_code),
+                "invoiceIndustryCode": str(self.industry_code),
                 "isBatch": "",
             },
             "buyerDetails": {
@@ -639,6 +640,7 @@ class TaxInvoiceHandler(InvoiceHandler):
             self.tax_rate = "0.00"
             self.tax_value = "0.00"
             self.tax_category = "exempt"
+            self.industry_code = "102"
         elif is_exempt == "101":
             self.tax_symbol = "03"
             self.tax_rate = "-"
