@@ -18,7 +18,7 @@ class InvoiceDetailsSchema(CoreModel):
     is_export: Optional[bool] = False
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class CreditNoteCancelSchema(CoreModel):
@@ -28,7 +28,7 @@ class CreditNoteCancelSchema(CoreModel):
     apply_category: Optional[str] = '104'
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class InvoiceGoodSchema(CoreModel):
@@ -39,7 +39,7 @@ class InvoiceGoodSchema(CoreModel):
     description: Optional[str] = ''
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class BuyerDetailsSchema(CoreModel):
@@ -59,7 +59,7 @@ class BuyerDetailsSchema(CoreModel):
     local_purchase_order: Optional[str] = ''
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class InvoiceAttachmentSchema(CoreModel):
@@ -79,7 +79,7 @@ class TaxInvoiceIncomingSchema(CoreModel):
     request_data: Optional[str] = ''
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class TaxInvoiceOutgoingSchema(CoreModel):
@@ -95,7 +95,7 @@ class TaxInvoiceOutgoingSchema(CoreModel):
     status: InvoiceStatuses
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class InvoiceNumberSchema(CoreModel):
@@ -107,4 +107,4 @@ class InvoiceNumberSchema(CoreModel):
     number_end: Optional[str] = ''
 
     class Config:
-        orm_mode = True
+        from_attributes = True

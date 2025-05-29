@@ -34,7 +34,7 @@ class TaxInvoiceOutgoing(Base):
     _request_invoice = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
     @property
     def request_invoice(self):
@@ -57,4 +57,4 @@ class TaxInvoiceNumber(Base):
     tax_invoice_outgoing = relationship("TaxInvoiceOutgoing", back_populates="tax_invoice_numbers")
 
     class Config:
-        orm_mode = True
+        from_attributes = True

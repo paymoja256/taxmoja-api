@@ -101,6 +101,7 @@ class TaxInvoiceHandler(InvoiceHandler):
         struct_logger.info(
             event="create_normal_invoice", msg="creating erp invoice", erp=erp
         )
+
         try:
             for taxable_item in self.taxable_items:
                 goods_code = taxable_item.good_code
@@ -112,12 +113,13 @@ class TaxInvoiceHandler(InvoiceHandler):
                     msg="getting goods enquiry",
                     data=tax_detail,
                 )
-                if taxable_item.tax_category:
-                    is_zero_rate = "102"
-                    is_exempt = "102"
+                if is_not_taxable(taxable_item.tax_category):
+                    is_zero_rate = "101"
+                    is_exempt = "101"
                 else:
                     is_zero_rate = tax_detail["isZeroRate"]
                     is_exempt = tax_detail["isExempt"]
+
                 measure_unit = tax_detail["measureUnit"]
                 self.set_tax_categories(
                     is_exempt, is_zero_rate, self.invoice_data.is_export
@@ -524,6 +526,7 @@ class TaxInvoiceHandler(InvoiceHandler):
             event="processing UG invoice",
             invoice=str(self.invoice_id),
             request_data=request_data,)
+
         return self.client.send_invoice(request_data)
 
     def convert_response(self, response):
@@ -630,7 +633,7 @@ class TaxInvoiceHandler(InvoiceHandler):
             if not clean_tax_pin(self.buyer_details.tax_pin):
                 return "Invalid tax pin for non Business to Consumer transaction"
 
-    def set_tax_categories(self, is_exempt, zero_rate, is_export=False):
+    def set_tax_categories(self, is_exempt, zero_rate, is_export):
         if is_export:
             self.tax_symbol = "02"
             self.tax_rate = "0.00"
@@ -698,3 +701,7 @@ def clean_invoice_type(invoice_type):
         return 5
     else:
         return 1
+
+
+def is_not_taxable(tax_category: str) -> bool:
+    return tax_category.upper() in ["NONE", "EXEMPT", "ZERO", "0.00", "0", "0.0"]

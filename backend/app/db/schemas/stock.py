@@ -14,7 +14,7 @@ class IncomingStockConfigurationSchema(CoreModel):
     status: Optional[InvoiceStatuses]="RECEIVED"
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class IncomingGoodsStockAdjustmentSchema(CoreModel):
@@ -29,7 +29,7 @@ class IncomingGoodsStockAdjustmentSchema(CoreModel):
     adjust_type: Optional[str] = ''
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class BranchSchema(CoreModel):
@@ -38,4 +38,4 @@ class BranchSchema(CoreModel):
     branch_id: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True

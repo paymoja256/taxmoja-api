@@ -32,7 +32,7 @@ class Stock(Base):
     _request_stock = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
     @property
     def request_stock(self):
@@ -47,4 +47,4 @@ class StockBranches(Base):
     branch_id = Column(String(255))
 
     class Config:
-        orm_mode = True
+        from_attributes = True
