@@ -64,7 +64,7 @@ class TaxInvoiceHandler(InvoiceHandler):
         self.original_invoice_code = ""
         self.credit_summary_detail = {}
         self.attachments = []
-        self.industry_code ="101"
+        self.industry_code = "101"
 
     async def convert_request(self, db, tax_invoice: TaxInvoiceIncomingSchema, erp=""):
         await self.client.get_key_signature()
@@ -470,7 +470,7 @@ class TaxInvoiceHandler(InvoiceHandler):
                 "buyerCitizenship": str(self.buyer_details.buyer_citizenship),
                 "buyerSector": str(self.buyer_details.buyer_sector),
                 "buyerReferenceNo": str(self.buyer_details.buyer_reference),
-                "deliveryTermsCode":"FOB"
+                "deliveryTermsCode": "FOB"
             },
             "goodsDetails": self.goods_details,
             "taxDetails": self.tax_details,
