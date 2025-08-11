@@ -453,8 +453,7 @@ class TaxInvoiceHandler(InvoiceHandler):
                 "invoiceKind": str(self.invoice_data.invoice_kind),
                 "dataSource": "103",
                 "invoiceIndustryCode": str(self.industry_code),
-                "isBatch": "",
-                "deliveryTermsCode":"FOB"
+                "isBatch": ""
             },
             "buyerDetails": {
                 "buyerTin": str(self.buyer_details.tax_pin),
@@ -471,6 +470,7 @@ class TaxInvoiceHandler(InvoiceHandler):
                 "buyerCitizenship": str(self.buyer_details.buyer_citizenship),
                 "buyerSector": str(self.buyer_details.buyer_sector),
                 "buyerReferenceNo": str(self.buyer_details.buyer_reference),
+                "deliveryTermsCode":"FOB"
             },
             "goodsDetails": self.goods_details,
             "taxDetails": self.tax_details,
