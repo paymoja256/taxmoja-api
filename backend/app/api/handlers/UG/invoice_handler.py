@@ -454,6 +454,7 @@ class TaxInvoiceHandler(InvoiceHandler):
                 "dataSource": "103",
                 "invoiceIndustryCode": str(self.industry_code),
                 "isBatch": "",
+                "deliveryTermsCode":"FOB"
             },
             "buyerDetails": {
                 "buyerTin": str(self.buyer_details.tax_pin),
