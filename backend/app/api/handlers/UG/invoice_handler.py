@@ -130,7 +130,8 @@ class TaxInvoiceHandler(InvoiceHandler):
                     is_exempt, is_zero_rate, self.invoice_data.is_export
                 )
                 if proceed:
-                    if self.erp.upper() == "DEAR":
+                    if self.erp.upper() in ("DEAR", "EXCLUSIVE"):
+                        # Item price is tax exclusive
                         net_price = float(taxable_item.sale_price)
                         unit_price = round(
                             (net_price + (net_price * float(self.tax_value))), 2
@@ -624,13 +625,6 @@ class TaxInvoiceHandler(InvoiceHandler):
             message="Retrieved from api: {}".format(instance_invoice_id),
         )
 
-        # basicInformation = self.invoice_data.get('basicInformation', None)
-        # if basicInformation:
-        #     anti_fake_code = basicInformation['antifakeCode']
-        #     qr_code = self.invoice_data['summary']['qrCode']
-
-        #     self.generate_qr_code(qr_code, country_code,
-        #                           tax_id, anti_fake_code)
 
         return self.invoice_data
 
