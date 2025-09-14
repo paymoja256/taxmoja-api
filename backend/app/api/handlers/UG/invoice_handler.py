@@ -22,6 +22,7 @@ class TaxInvoiceHandler(InvoiceHandler):
         self.taxable_items = {}
         self.invoice_data = []
         self.buyer_details = {}
+        self.erp = settings["erp"]
         self.uga_email_address = settings["client_email"]
         self.uga_legal_name = settings["client_name"]
         self.uga_business_name = settings["client_name"]
@@ -66,7 +67,7 @@ class TaxInvoiceHandler(InvoiceHandler):
         self.attachments = []
         self.industry_code = "101"
 
-    async def convert_request(self, db, tax_invoice: TaxInvoiceIncomingSchema, erp=""):
+    async def convert_request(self, db, tax_invoice: TaxInvoiceIncomingSchema):
         await self.client.get_key_signature()
         self.taxable_items = tax_invoice.goods_details
         self.invoice_data = tax_invoice.invoice_details
@@ -96,11 +97,11 @@ class TaxInvoiceHandler(InvoiceHandler):
             return await self.create_credit_invoice(db)
 
         else:
-            return await self.create_normal_invoice(db, erp)
+            return await self.create_normal_invoice(db)
 
-    async def create_normal_invoice(self, db, erp=""):
+    async def create_normal_invoice(self, db):
         struct_logger.info(
-            event="create_normal_invoice", msg="creating erp invoice", erp=erp
+            event="create_normal_invoice", msg="creating erp invoice"
         )
 
         try:
@@ -117,6 +118,9 @@ class TaxInvoiceHandler(InvoiceHandler):
                 if is_not_taxable(taxable_item.tax_category):
                     is_zero_rate = "101"
                     is_exempt = "101"
+                elif is_taxable(taxable_item.tax_category):
+                    is_zero_rate = "VAT"
+                    is_exempt = "VAT"
                 else:
                     is_zero_rate = tax_detail["isZeroRate"]
                     is_exempt = tax_detail["isExempt"]
@@ -126,7 +130,7 @@ class TaxInvoiceHandler(InvoiceHandler):
                     is_exempt, is_zero_rate, self.invoice_data.is_export
                 )
                 if proceed:
-                    if erp.upper() == "DEAR":
+                    if self.erp.upper() == "DEAR":
                         net_price = float(taxable_item.sale_price)
                         unit_price = round(
                             (net_price + (net_price * float(self.tax_value))), 2
@@ -708,3 +712,8 @@ def clean_invoice_type(invoice_type):
 
 def is_not_taxable(tax_category: str) -> bool:
     return tax_category.upper() in ["NONE", "EXEMPT", "ZERO", "0.00", "0", "0.0"]
+
+
+def is_taxable(tax_category: str) -> bool:
+
+    return tax_category.upper() in ["TAX001", "18.0", "18", "VAT"]

@@ -47,8 +47,8 @@ class TaxService:
         )
         return new_invoice
 
-    async def send_invoice(self, db, tax_invoice: TaxInvoiceOutgoing, erp=""):
-        new_invoice = await self.invoice_manager.send_invoice(db, tax_invoice, erp)
+    async def send_invoice(self, db, tax_invoice: TaxInvoiceOutgoing):
+        new_invoice = await self.invoice_manager.send_invoice(db, tax_invoice)
         return new_invoice
 
     async def get_invoice_by_id(self, db, instance_invoice_id):

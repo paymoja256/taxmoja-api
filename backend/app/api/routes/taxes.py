@@ -60,8 +60,7 @@ async def incoming_stock_adjustment(
 async def incoming_invoice(
     tax_invoice: TaxInvoiceIncomingSchema,
     invoice_service=Depends(get_tax_service),
-    session=Depends(get_database),
-    erp: str = ''
+    session=Depends(get_database)
 ):
     try:
         message = invoice_service
@@ -69,7 +68,7 @@ async def incoming_invoice(
             session, tax_invoice
         )
 
-        message = await invoice_service.send_invoice(session, tax_invoice_saved, erp)
+        message = await invoice_service.send_invoice(session, tax_invoice_saved)
     except Exception as ex:
         raise HTTPException(status_code=404, detail=str(ex))
 
@@ -81,8 +80,7 @@ async def incoming_invoice_queue(
     tax_invoice: TaxInvoiceIncomingSchema,
     background_tasks: BackgroundTasks,
     invoice_service=Depends(get_tax_service),
-    session=Depends(get_database),
-    erp: str = ''
+    session=Depends(get_database)
 ):
     try:
         message = invoice_service
@@ -91,7 +89,7 @@ async def incoming_invoice_queue(
         )
 
         async def send_new_invoice():
-            await invoice_service.send_invoice(session, tax_invoice_saved, erp)
+            await invoice_service.send_invoice(session, tax_invoice_saved)
 
         background_tasks.add_task(send_new_invoice)
         message = "invoice sent for processing"

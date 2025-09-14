@@ -44,6 +44,7 @@
           "ura_commodity_category": "AdditionalAttribute1",
           "goods_description": "AdditionalAttribute4"
         },
+        "erp":"xero",
         "xero_api_url": "https://api.xero.com/api.xro/2.0/",
         "xero_tenant_id": "bc1edbaa-c231-474d-95e5-aebdddb11409",
         "xero_client_id": "80F96CB2E5FF4958B41C290654C1F52A",
@@ -60,6 +61,7 @@
         "efris_device_no": "TCSa28758649357136",
         "efris_tax_payer_id": "1000522479",
         "app_id": "AP04",
+        "erp":"xero",
         "efris_version": "1.1.20191201",
         "client_name": "Engie Technologies",
         "client_email": "info@Engie.com",
@@ -106,11 +108,12 @@
         "private_key": "/Applications/MAMP/htdocs/paymoja efris/fastapi/mita/api/efris/keys/1003841291/key.p12",
         "private_key_password": "vital",
         "invoice_country": "UG",
-        "Description": "Vital Test Environment"
+        "Description": "Vital Test Environment",
+        "erp":"DEAR"
       },
       "production": {
         "tax_pin": "1003841291",
-        "efris_url": "http://19`2.168.64.14:9880/efristcs/ws/tcsapp/getInformation",
+        "efris_url": "http://192.168.64.14:9880/efristcs/ws/tcsapp/getInformation",
         "efris_url_online": "https://efrisws.ura.go.ug/ws/taapp/getInformation",
         "industry_code": "101",
         "efris_username": "1003841291",
@@ -126,7 +129,8 @@
         "private_key": "/Applications/MAMP/htdocs/paymoja efris/fastapi/mita/api/efris/keys/1003841291/key.p12",
         "private_key_password": "vital",
         "invoice_country": "UG",
-        "Description": "Vital Tomosis Live Environment"
+        "Description": "Vital Tomosis Live Environment",
+       "erp":"DEAR"
       },
       "testing": false
     },
@@ -144,6 +148,7 @@
         "efris_device_no": "TCSb60e302730239923",
         "efris_tax_payer_id": "1000591263",
         "app_id": "AP04",
+        "erp":"quickbooks",
         "efris_version": "1.1.20191201",
         "client_name": "Future Link Technologies",
         "client_email": "info@flt.co.ug",
@@ -178,6 +183,7 @@
         "client_address": "Plot 97 Bukoto St, Kampala",
         "client_mobile": "+256774638790",
         "online_mode": "True",
+        "erp":"quickbooks",
         "private_key": "/Applications/MAMP/htdocs/paymoja efris/fastapi/mita/api/efris/keys/1000591263/key.p12",
         "private_key_password": "futurelink",
         "invoice_country": "UG",
@@ -207,6 +213,7 @@
         "online_mode": "True",
         "private_key_password": "rocket",
         "invoice_country": "UG",
+        "erp":"xero",
         "Description": "Rocket Test Environment",
         "bitrix_api_url2": "https://intranet.fltug.com/rest/73/cbgjtolasfvbmanf/",
         "bitrix_api_url": "https://b24-iolvdc.bitrix24.com/rest/1/1qdarkrlk5847dzk/",
@@ -245,6 +252,7 @@
         "efris_device_no": "1005332112_01",
         "efris_tax_payer_id": "1005332112",
         "app_id": "AP04",
+        "erp":"xero",
         "efris_version": "1.1.20191201",
         "client_name": "Rocket Products Limited",
         "client_email": "info@Engie.com",
@@ -266,7 +274,7 @@
           "efris_buyer_tin": ""
         }
       },
-      "testing": false
+      "testing": true
     },
     "1000028946": {
       "api_keys": {
@@ -285,6 +293,7 @@
         "efris_version": "1.1.20191201",
         "client_name": "Mogas",
         "client_email": "denis.m@mogasoil.com",
+        "erp":"oracle",
         "client_address": "Nile Avenue , 40 , Box no: 19, Kampala",
         "client_mobile": "0414341701",
         "online_mode": "True",
@@ -301,6 +310,7 @@
         "efris_device_no": "1000028946_01",
         "efris_tax_payer_id": "1000028946",
         "app_id": "AP04",
+        "erp":"oracle",
         "efris_version": "1.1.20191201",
         "client_name": "Mogas",
         "client_email": "denis.m@mogasoil.com",
@@ -334,6 +344,7 @@
         "client_address": "1st Floor Expanding Social Protection Building, Plot 9 Lourdel Road, Nakasero Kampala Uganda",
         "client_mobile": "+256706730746",
         "online_mode": "True",
+        "erp":"xero",
         "private_key": "/Applications/MAMP/htdocs/paymoja efris/fastapi/mita/api/efris/keys/1016442416/key.pfx",
         "private_key_password": "reelanalytics",
         "invoice_country": "UG"
@@ -349,6 +360,7 @@
         "app_id": "AP04",
         "efris_version": "1.1.20191201",
         "client_name": "Reelanalytics Uganda",
+        "erp":"xero",
         "client_email": "columba.mwandembe@reelanalytics.net",
         "client_address": "1st Floor Expanding Social Protection Building, Plot 9 Lourdel Road, Nakasero Kampala Uganda",
         "client_mobile": "+256706730746",
@@ -375,6 +387,7 @@
         "efris_tax_payer_id": "1008921533",
         "app_id": "AP04",
         "efris_version": "1.1.20191201",
+        "erp":"lightspeed",
         "client_name": "Bushpig Backpackers Hostel",
         "client_email": "joyce@sync-exp.com",
         "client_address": "31 John Babiha (Acacia) Ave, Kampala",
@@ -393,6 +406,7 @@
         "efris_device_no": "TCSb60e302730239923",
         "efris_tax_payer_id": "1008921533",
         "app_id": "AP04",
+        "erp":"lightspeed",
         "efris_version": "1.1.20191201",
         "client_name": "Bushpig Backpackers Hostel",
         "client_email": "joyce@sync-exp.com",
@@ -425,6 +439,7 @@
         "client_address": "Plot 959 Ntinda, Buye",
         "client_mobile": "256 706 758530",
         "online_mode": "True",
+        "erp":"xero",
         "private_key": "/Applications/MAMP/htdocs/paymoja efris/fastapi/mita/api/efris/keys/1016802997 /key.pfx",
         "private_key_password": "paymoja",
         "invoice_country": "UG"
@@ -444,6 +459,7 @@
         "client_address": "Plot 959 Ntinda, Buye",
         "client_mobile": "0706746530",
         "online_mode": "True",
+        "erp":"xero",
         "private_key": "/Applications/MAMP/htdocs/paymoja efris/fastapi/mita/api/efris/keys/1016802997 /key.pfx",
         "private_key_password": "paymoja",
         "invoice_country": "UG"
