@@ -1,6 +1,8 @@
 # --- ASGI / realtime ---
 channels==4.2.2
 channels-redis==4.2.1
+uvicorn[standard]==0.30.1
+
 
 # --- Task queue ---
 celery==5.5.3
