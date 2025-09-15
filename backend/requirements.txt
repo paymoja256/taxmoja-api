@@ -1,43 +1,42 @@
 # --- FastAPI core ---
 fastapi==0.111.1
 starlette==0.37.2
-uvicorn[standard]==0.30.1
+uvicorn[standard]==0.30.1   # includes uvloop, httptools, etc.
 
 # --- Database + ORM ---
 SQLAlchemy==2.0.34
 alembic==1.13.2
 
-# PostgreSQL driver (modern psycopg3; keep one)
-psycopg[binary]==3.2.9
+# PostgreSQL driver (modern psycopg3; preferred)
+# psycopg[binary]==3.2.9
 psycopg2-binary==2.9.9
+PyMySQL==1.1.1
 
-
-# --- Async DB options (use only if you need async engines) ---
-# asyncpg==0.29.0
-# databases==0.9.0
 
 # --- Auth / Security ---
 PyJWT==2.9.0
-python-multipart==0.0.9    # needed for form uploads / OAuth flows
-passlib[bcrypt]==1.7.4     # for password hashing
+python-multipart==0.0.9    # needed for form data (uploads, OAuth)
+passlib[bcrypt]==1.7.4     # password hashing
 
-# --- Task Queue (Celery + Redis) ---
+# --- Task Queue + Redis ---
 celery==5.5.3
 redis==5.0.8
 
-# --- Supabase / Realtime (if you use it) ---
+# --- Supabase SDK (optional, if you use Supabase) ---
 supabase==2.16.0
 gotrue==2.11.4
 postgrest==1.1.1
 realtime==2.5.3
 storage3==0.12.1
 
-# --- VGS (Virtual Global Services) ---
+# --- VGS client (optional, if you use VGS tokenization) ---
 vgs-api-client==0.0.51
 
-# --- Utils ---
+# --- Utilities ---
 requests==2.32.3
 httpx==0.27.2
 pydantic==2.11.7
 typing_extensions==4.14.1
 python-dotenv==1.0.1
+structlog==24.2.0
+
