@@ -16,6 +16,7 @@ class TaxInvoiceHandler(InvoiceHandler):
         self.invoice_tax_details = []
         self.invoice_code = None
         self.tax_invoice = {}
+        self.total_weight = ""
         self.uga_tax_pin = settings["tax_pin"]
         self.invoice_good_details = []
         self.invoice_payway_data = []
@@ -180,6 +181,8 @@ class TaxInvoiceHandler(InvoiceHandler):
                         "exciseRate": "",
                         "exciseRule": "",
                         "exciseTax": "",
+                        "totalWeight": "0.5165",
+                        "pieceQty": "1",
                         "pack": "",
                         "stick": "",
                         "exciseUnit": "",
@@ -624,7 +627,6 @@ class TaxInvoiceHandler(InvoiceHandler):
             invoice_data=self.invoice_data,
             message="Retrieved from api: {}".format(instance_invoice_id),
         )
-
 
         return self.invoice_data
 
