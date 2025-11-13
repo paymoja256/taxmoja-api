@@ -1,451 +1,886 @@
-<html>
-<head><title>Taxmoja by Paymoja</title>
-	<link href="../../static/metronic/demo1/assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css" />
-		<link href="../../static/metronic/demo1/assets/css/style.bundle.css" rel="stylesheet" type="text/css" />
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Centry Tax - Automated Global Fiscal Invoicing</title>
+	<link rel="shortcut icon" href="../../static/metronic/demo1/assets/media/logos/favicon.ico" />
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" />
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
 
-		<link rel="shortcut icon" href="../../static/metronic/demo1/assets/media/logos/favicon.ico" />
-		<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700" />
-	</head>
+		:root {
+			--centry-primary: #638C80;
+			--centry-dark: #1a1a1a;
+			--centry-light: #f8f9fa;
+			--centry-accent: #4f7366;
+		}
+
+		body {
+			font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+			line-height: 1.6;
+			color: #333;
+			overflow-x: hidden;
+		}
+
+		/* Navigation */
+		.navbar {
+			position: fixed;
+			top: 0;
+			width: 100%;
+			z-index: 1000;
+			background: white;
+			box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+			transition: all 0.3s ease;
+		}
+
+		.navbar.scrolled {
+			box-shadow: 0 2px 30px rgba(0,0,0,0.1);
+		}
+
+		.nav-container {
+			max-width: 1400px;
+			margin: 0 auto;
+			padding: 1.2rem 3rem;
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+
+		.logo {
+			font-size: 1.8rem;
+			font-weight: 700;
+			color: var(--centry-primary);
+			text-decoration: none;
+			letter-spacing: -0.5px;
+		}
+
+		.nav-links {
+			display: flex;
+			gap: 2.5rem;
+			list-style: none;
+			align-items: center;
+		}
+
+		.nav-links a {
+			color: #555;
+			text-decoration: none;
+			font-weight: 500;
+			font-size: 0.95rem;
+			transition: color 0.3s;
+		}
+
+		.nav-links a:hover {
+			color: var(--centry-primary);
+		}
+
+		.btn {
+			padding: 0.75rem 1.8rem;
+			border-radius: 8px;
+			text-decoration: none;
+			font-weight: 600;
+			transition: all 0.3s;
+			display: inline-block;
+			font-size: 0.95rem;
+			border: none;
+			cursor: pointer;
+		}
+
+		.btn-primary {
+			background: var(--centry-primary);
+			color: white;
+			box-shadow: 0 4px 12px rgba(99, 140, 128, 0.2);
+		}
+
+		.btn-primary:hover {
+			background: var(--centry-accent);
+			box-shadow: 0 6px 20px rgba(99, 140, 128, 0.3);
+			transform: translateY(-2px);
+		}
+
+		.btn-outline {
+			background: transparent;
+			color: var(--centry-primary);
+			border: 2px solid var(--centry-primary);
+		}
+
+		.btn-outline:hover {
+			background: var(--centry-primary);
+			color: white;
+		}
+
+		/* Hero Section */
+		.hero {
+			padding: 140px 3rem 100px;
+			background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+			position: relative;
+			overflow: hidden;
+		}
+
+		.hero::before {
+			content: '';
+			position: absolute;
+			top: 0;
+			right: -10%;
+			width: 60%;
+			height: 100%;
+			background: radial-gradient(circle, rgba(99, 140, 128, 0.08) 0%, transparent 70%);
+			pointer-events: none;
+		}
+
+		.hero-container {
+			max-width: 1400px;
+			margin: 0 auto;
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 4rem;
+			align-items: center;
+			position: relative;
+			z-index: 1;
+		}
+
+		.hero-content h1 {
+			font-size: 3.5rem;
+			font-weight: 800;
+			line-height: 1.2;
+			margin-bottom: 1.5rem;
+			color: var(--centry-dark);
+			letter-spacing: -1px;
+		}
+
+		.hero-content .highlight {
+			color: var(--centry-primary);
+			position: relative;
+		}
+
+		.hero-content p {
+			font-size: 1.2rem;
+			color: #666;
+			margin-bottom: 2.5rem;
+			line-height: 1.8;
+		}
+
+		.hero-buttons {
+			display: flex;
+			gap: 1rem;
+			flex-wrap: wrap;
+		}
+
+		.hero-image {
+			position: relative;
+		}
+
+		.hero-image img {
+			width: 100%;
+			border-radius: 20px;
+			box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+		}
+
+		.stats-bar {
+			background: white;
+			border-radius: 15px;
+			padding: 2rem 3rem;
+			box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+			display: flex;
+			justify-content: space-around;
+			max-width: 1400px;
+			margin: -50px auto 0;
+			position: relative;
+			z-index: 10;
+		}
+
+		.stat-item {
+			text-align: center;
+		}
+
+		.stat-number {
+			font-size: 2.5rem;
+			font-weight: 800;
+			color: var(--centry-primary);
+			display: block;
+		}
+
+		.stat-label {
+			color: #666;
+			font-size: 0.95rem;
+			font-weight: 500;
+		}
+
+		/* Features Section */
+		.features {
+			padding: 120px 3rem;
+			background: white;
+		}
+
+		.features-container {
+			max-width: 1400px;
+			margin: 0 auto;
+		}
+
+		.section-header {
+			text-align: center;
+			max-width: 700px;
+			margin: 0 auto 4rem;
+		}
+
+		.section-tag {
+			display: inline-block;
+			padding: 0.5rem 1.2rem;
+			background: rgba(99, 140, 128, 0.1);
+			color: var(--centry-primary);
+			border-radius: 50px;
+			font-size: 0.85rem;
+			font-weight: 600;
+			text-transform: uppercase;
+			letter-spacing: 0.5px;
+			margin-bottom: 1rem;
+		}
+
+		.section-title {
+			font-size: 2.8rem;
+			font-weight: 800;
+			color: var(--centry-dark);
+			margin-bottom: 1rem;
+			letter-spacing: -0.5px;
+		}
+
+		.section-description {
+			font-size: 1.15rem;
+			color: #666;
+			line-height: 1.8;
+		}
+
+		.features-grid {
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			gap: 2.5rem;
+		}
+
+		.feature-card {
+			background: white;
+			padding: 2.5rem;
+			border-radius: 16px;
+			border: 1px solid #e5e7eb;
+			transition: all 0.3s;
+			position: relative;
+		}
+
+		.feature-card:hover {
+			transform: translateY(-8px);
+			box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+			border-color: var(--centry-primary);
+		}
+
+		.feature-icon {
+			width: 60px;
+			height: 60px;
+			background: linear-gradient(135deg, var(--centry-primary), var(--centry-accent));
+			border-radius: 12px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 1.8rem;
+			margin-bottom: 1.5rem;
+			color: white;
+		}
+
+		.feature-card h3 {
+			font-size: 1.4rem;
+			font-weight: 700;
+			color: var(--centry-dark);
+			margin-bottom: 1rem;
+		}
+
+		.feature-card p {
+			color: #666;
+			line-height: 1.8;
+			font-size: 0.98rem;
+		}
+
+		/* Integration Section */
+		.integrations {
+			padding: 120px 3rem;
+			background: var(--centry-light);
+		}
+
+		.integrations-container {
+			max-width: 1400px;
+			margin: 0 auto;
+		}
+
+		.integrations-grid {
+			display: grid;
+			grid-template-columns: repeat(5, 1fr);
+			gap: 2rem;
+			margin-top: 3rem;
+		}
+
+		.integration-card {
+			background: white;
+			padding: 2rem;
+			border-radius: 12px;
+			text-align: center;
+			border: 1px solid #e5e7eb;
+			transition: all 0.3s;
+		}
+
+		.integration-card:hover {
+			transform: translateY(-5px);
+			box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+			border-color: var(--centry-primary);
+		}
+
+		.integration-card h4 {
+			font-size: 1.1rem;
+			font-weight: 600;
+			color: var(--centry-dark);
+		}
+
+		/* How It Works */
+		.how-it-works {
+			padding: 120px 3rem;
+			background: white;
+		}
+
+		.how-container {
+			max-width: 1400px;
+			margin: 0 auto;
+		}
+
+		.steps-grid {
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			gap: 3rem;
+			margin-top: 4rem;
+		}
+
+		.step-card {
+			text-align: center;
+			position: relative;
+		}
+
+		.step-number {
+			width: 70px;
+			height: 70px;
+			background: var(--centry-primary);
+			color: white;
+			border-radius: 50%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 2rem;
+			font-weight: 800;
+			margin: 0 auto 1.5rem;
+			box-shadow: 0 4px 15px rgba(99, 140, 128, 0.3);
+		}
+
+		.step-card h3 {
+			font-size: 1.4rem;
+			font-weight: 700;
+			color: var(--centry-dark);
+			margin-bottom: 1rem;
+		}
+
+		.step-card p {
+			color: #666;
+			line-height: 1.8;
+		}
+
+		/* CTA Section */
+		.cta-section {
+			padding: 100px 3rem;
+			background: var(--centry-primary);
+			color: white;
+			position: relative;
+			overflow: hidden;
+		}
+
+		.cta-section::before {
+			content: '';
+			position: absolute;
+			top: -50%;
+			right: -10%;
+			width: 60%;
+			height: 200%;
+			background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+			pointer-events: none;
+		}
+
+		.cta-container {
+			max-width: 900px;
+			margin: 0 auto;
+			text-align: center;
+			position: relative;
+			z-index: 1;
+		}
+
+		.cta-section h2 {
+			font-size: 3rem;
+			font-weight: 800;
+			margin-bottom: 1.5rem;
+		}
+
+		.cta-section p {
+			font-size: 1.2rem;
+			margin-bottom: 2.5rem;
+			opacity: 0.95;
+		}
+
+		.btn-white {
+			background: white;
+			color: var(--centry-primary);
+			padding: 1rem 2.5rem;
+			font-size: 1.05rem;
+		}
+
+		.btn-white:hover {
+			background: #f8f9fa;
+			transform: translateY(-3px);
+			box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+		}
+
+		/* Footer */
+		footer {
+			background: var(--centry-dark);
+			color: white;
+			padding: 4rem 3rem 2rem;
+		}
+
+		.footer-container {
+			max-width: 1400px;
+			margin: 0 auto;
+			display: grid;
+			grid-template-columns: 2fr 1fr 1fr 1fr;
+			gap: 3rem;
+			margin-bottom: 3rem;
+		}
+
+		.footer-brand h3 {
+			font-size: 1.8rem;
+			font-weight: 700;
+			color: var(--centry-primary);
+			margin-bottom: 1rem;
+		}
+
+		.footer-brand p {
+			color: #aaa;
+			line-height: 1.8;
+		}
+
+		.footer-section h4 {
+			font-size: 1.1rem;
+			font-weight: 600;
+			margin-bottom: 1rem;
+			color: var(--centry-primary);
+		}
+
+		.footer-section ul {
+			list-style: none;
+		}
+
+		.footer-section ul li {
+			margin-bottom: 0.7rem;
+		}
+
+		.footer-section a {
+			color: #aaa;
+			text-decoration: none;
+			transition: color 0.3s;
+			font-size: 0.95rem;
+		}
+
+		.footer-section a:hover {
+			color: white;
+		}
+
+		.footer-bottom {
+			text-align: center;
+			padding-top: 2rem;
+			border-top: 1px solid #333;
+			color: #888;
+			font-size: 0.9rem;
+		}
+
+		/* Responsive */
+		@media (max-width: 1024px) {
+			.hero-container {
+				grid-template-columns: 1fr;
+				gap: 3rem;
+			}
+
+			.hero-content h1 {
+				font-size: 2.8rem;
+			}
+
+			.features-grid {
+				grid-template-columns: repeat(2, 1fr);
+			}
+
+			.integrations-grid {
+				grid-template-columns: repeat(3, 1fr);
+			}
+
+			.steps-grid {
+				grid-template-columns: 1fr;
+			}
+
+			.footer-container {
+				grid-template-columns: 1fr 1fr;
+			}
+		}
+
+		@media (max-width: 768px) {
+			.nav-container {
+				padding: 1rem 1.5rem;
+			}
+
+			.nav-links {
+				display: none;
+			}
+
+			.hero {
+				padding: 100px 1.5rem 60px;
+			}
+
+			.hero-content h1 {
+				font-size: 2.2rem;
+			}
+
+			.hero-content p {
+				font-size: 1.05rem;
+			}
+
+			.stats-bar {
+				flex-direction: column;
+				gap: 2rem;
+				margin: -30px 1.5rem 0;
+				padding: 2rem;
+			}
+
+			.features,
+			.integrations,
+			.how-it-works {
+				padding: 80px 1.5rem;
+			}
+
+			.features-grid {
+				grid-template-columns: 1fr;
+			}
+
+			.integrations-grid {
+				grid-template-columns: repeat(2, 1fr);
+			}
+
+			.section-title {
+				font-size: 2rem;
+			}
+
+			.cta-section h2 {
+				font-size: 2rem;
+			}
+
+			.footer-container {
+				grid-template-columns: 1fr;
+			}
+		}
+	</style>
+</head>
 
 	<!--begin::Body-->
-	<body id="kt_body" data-bs-spy="scroll" data-bs-target="#kt_landing_menu" data-bs-offset="200" class="bg-white position-relative">
-		<!--begin::Main-->
-		<!--begin::Root-->
-		<div class="d-flex flex-column flex-root">
-			<!--begin::Header Section-->
-			<div class="mb-0" id="home">
-				<!--begin::Wrapper-->
-				<div class="bgi-no-repeat bgi-size-contain bgi-position-x-center bgi-position-y-bottom landing-dark-bg" style="background-image: url(/static/metronic/demo1/assets/media/svg/illustrations/landing.svg)">
-					<!--begin::Header-->
-					<div class="landing-header" data-kt-sticky="true" data-kt-sticky-name="landing-header" data-kt-sticky-offset="{default: '200px', lg: '300px'}">
-						<!--begin::Container-->
-						<div class="container">
-							<!--begin::Wrapper-->
-							<div class="d-flex align-items-center justify-content-between">
-								<!--begin::Logo-->
-								<div class="d-flex align-items-center flex-equal">
-									<!--begin::Mobile menu toggle-->
-									<button class="btn btn-icon btn-active-color-primary me-3 d-flex d-lg-none" id="kt_landing_menu_toggle">
-										<!--begin::Svg Icon | path: icons/duotune/abstract/abs015.svg-->
-										<span class="svg-icon svg-icon-2hx">
-											<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-												<path d="M21 7H3C2.4 7 2 6.6 2 6V4C2 3.4 2.4 3 3 3H21C21.6 3 22 3.4 22 4V6C22 6.6 21.6 7 21 7Z" fill="black" />
-												<path opacity="0.3" d="M21 14H3C2.4 14 2 13.6 2 13V11C2 10.4 2.4 10 3 10H21C21.6 10 22 10.4 22 11V13C22 13.6 21.6 14 21 14ZM22 20V18C22 17.4 21.6 17 21 17H3C2.4 17 2 17.4 2 18V20C2 20.6 2.4 21 3 21H21C21.6 21 22 20.6 22 20Z" fill="black" />
-											</svg>
-										</span>
-										<!--end::Svg Icon-->
-									</button>
-									<!--end::Mobile menu toggle-->
-									<!--begin::Logo image-->
-<!-- 									<a href="../../demo1/dist/landing.html"> -->
-<!-- 										<img alt="MiTa" src="/static/metronic/demo1/assets/media/logos/logo-engie.png" class="logo-default h-25px h-lg-30px" /> -->
-<!-- 										<img alt="MiTa" src="/static/metronic/demo1/assets/media/logos/logo-engie.png" class="logo-sticky h-20px h-lg-25px" /> -->
-<!-- 									</a> -->
-									<!--end::Logo image-->
-								</div>
-								<!--end::Logo-->
-								<!--begin::Menu wrapper-->
-								<div class="d-lg-block" id="kt_header_nav_wrapper">
-									<div class="d-lg-block p-5 p-lg-0" data-kt-drawer="true" data-kt-drawer-name="landing-menu" data-kt-drawer-activate="{default: true, lg: false}" data-kt-drawer-overlay="true" data-kt-drawer-width="200px" data-kt-drawer-direction="start" data-kt-drawer-toggle="#kt_landing_menu_toggle" data-kt-swapper="true" data-kt-swapper-mode="prepend" data-kt-swapper-parent="{default: '#kt_body', lg: '#kt_header_nav_wrapper'}">
-										<!--begin::Menu-->
-										<div class="menu menu-column flex-nowrap menu-rounded menu-lg-row menu-title-gray-500 menu-state-title-primary nav nav-flush fs-5 fw-bold" id="kt_landing_menu">
-											<!--begin::Menu item-->
-											<div class="menu-item">
-												<!--begin::Menu link-->
-												<a class="menu-link nav-link active py-3 px-4 px-xxl-6" href="#kt_body" data-kt-scroll-toggle="true" data-kt-drawer-dismiss="true">Home</a>
-												<!--end::Menu link-->
-											</div>
-											<!--end::Menu item-->
-											<!--begin::Menu item-->
-											<div class="menu-item">
-												<!--begin::Menu link-->
-												<a class="menu-link nav-link py-3 px-4 px-xxl-6" href="#how-it-works" data-kt-scroll-toggle="true" data-kt-drawer-dismiss="true">How it Works</a>
-												<!--end::Menu link-->
-											</div>
-											<!--end::Menu item-->
-											<!--begin::Menu item-->
-											<div class="menu-item">
-												<!--begin::Menu link-->
-												<a class="menu-link nav-link py-3 px-4 px-xxl-6" href="#achievements" data-kt-scroll-toggle="true" data-kt-drawer-dismiss="true">Achievements</a>
-												<!--end::Menu link-->
-											</div>
-											<!--end::Menu item-->
-
-										</div>
-										<!--end::Menu-->
-									</div>
-								</div>
-								<!--end::Menu wrapper-->
-								<!--begin::Toolbar-->
-								<div class="flex-equal text-end ms-1">
-<!-- 									<a href="../../demo1/dist/authentication/flows/basic/sign-in.html" class="btn btn-success">Sign In</a> -->
-								</div>
-								<!--end::Toolbar-->
-							</div>
-							<!--end::Wrapper-->
-						</div>
-						<!--end::Container-->
-					</div>
-					<!--end::Header-->
-					<!--begin::Landing hero-->
-					<div class="d-flex flex-column flex-center w-100 min-h-350px min-h-lg-500px px-9">
-						<!--begin::Heading-->
-						<div class="text-center mb-5 mb-lg-10 py-10 py-lg-20">
-							<!--begin::Title-->
-							<h1 class="text-white lh-base fw-bolder fs-2x fs-lg-3x mb-15">Automated Global Fiscal Invoicing
-							<br />with
-							<span style="background: linear-gradient(to right, #12CE5D 0%, #FFD80C 100%);-webkit-background-clip: text;-webkit-text-fill-color: transparent;">
-								<span id="kt_landing_hero_text">Taxmoja</span>
-							</span></h1>
-							<!--end::Title-->
-							<!--begin::Action-->
-							<a href="/docs" class="btn btn-primary">Documentation</a>
-							<!--end::Action-->
-						</div>
-						<!--end::Heading-->
-						<!--begin::Clients-->
-
-						<!--end::Clients-->
-					</div>
-					<!--end::Landing hero-->
-				</div>
-				<!--end::Wrapper-->
-				<!--begin::Curve bottom-->
-				<div class="landing-curve landing-dark-color mb-10 mb-lg-20">
-					<svg viewBox="15 12 1470 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-						<path d="M0 11C3.93573 11.3356 7.85984 11.6689 11.7725 12H1488.16C1492.1 11.6689 1496.04 11.3356 1500 11V12H1488.16C913.668 60.3476 586.282 60.6117 11.7725 12H0V11Z" fill="currentColor"></path>
-					</svg>
-				</div>
-				<!--end::Curve bottom-->
-			</div>
-			<!--end::Header Section-->
-			<!--begin::How It Works Section-->
-			<div class="mb-n10 mb-lg-n20 z-index-2">
-				<!--begin::Container-->
-				<div class="container">
-					<!--begin::Heading-->
-					<div class="text-center mb-17">
-						<!--begin::Title-->
-						<h3 class="fs-2hx text-dark mb-5" id="how-it-works" data-kt-scroll-offset="{default: 100, lg: 150}">How it Works</h3>
-						<!--end::Title-->
-						<!--begin::Text-->
-						<div class="fs-5 text-muted fw-bold">Taxmoja makes it easy to integrate your ERP with the <p>different tax authorities in and outside Africa. <p>We use one api to integrate with many ERP's in several countries.That's our magic!</div>
-						<!--end::Text-->
-					</div>
-					<!--end::Heading-->
-					<!--begin::Row-->
-					<div class="row w-100 gy-10 mb-md-20">
-						<!--begin::Col-->
-						<div class="col-md-4 px-5">
-							<!--begin::Story-->
-							<div class="text-center mb-10 mb-md-0">
-								<!--begin::Illustration-->
-								<img src="static/metronic/demo1/assets/media/illustrations/sketchy-1/2.png" class="mh-125px mb-9" alt="" />
-								<!--end::Illustration-->
-								<!--begin::Heading-->
-								<div class="d-flex flex-center mb-5">
-									<!--begin::Badge-->
-									<span class="badge badge-circle badge-light-success fw-bolder p-5 me-3 fs-3">1</span>
-									<!--end::Badge-->
-									<!--begin::Title-->
-									<div class="fs-5 fs-lg-3 fw-bolder text-dark">Integrate ERP</div>
-									<!--end::Title-->
-								</div>
-								<!--end::Heading-->
-								<!--begin::Description-->
-								<div class="fw-bold fs-6 fs-lg-4 text-muted">Save thousands to millions of bucks
-								<br />by using our already existing ERP's
-								<br />or contact our experienced team for a custom integration</div>
-								<!--end::Description-->
-							</div>
-							<!--end::Story-->
-						</div>
-						<!--end::Col-->
-						<!--begin::Col-->
-						<div class="col-md-4 px-5">
-							<!--begin::Story-->
-							<div class="text-center mb-10 mb-md-0">
-								<!--begin::Illustration-->
-								<img src="static/metronic/demo1/assets/media/illustrations/sketchy-1/8.png" class="mh-125px mb-9" alt="" />
-								<!--end::Illustration-->
-								<!--begin::Heading-->
-								<div class="d-flex flex-center mb-5">
-									<!--begin::Badge-->
-									<span class="badge badge-circle badge-light-success fw-bolder p-5 me-3 fs-3">2</span>
-									<!--end::Badge-->
-									<!--begin::Title-->
-									<div class="fs-5 fs-lg-3 fw-bolder text-dark">Give us your tax credentials</div>
-									<!--end::Title-->
-								</div>
-								<!--end::Heading-->
-								<!--begin::Description-->
-								<div class="fw-bold fs-6 fs-lg-4 text-muted">We then configure your chosen ERP with your
-								<br />tax credentials and settings
-								<br />in a short period of time</div>
-								<!--end::Description-->
-							</div>
-							<!--end::Story-->
-						</div>
-						<!--end::Col-->
-						<!--begin::Col-->
-						<div class="col-md-4 px-5">
-							<!--begin::Story-->
-							<div class="text-center mb-10 mb-md-0">
-								<!--begin::Illustration-->
-								<img src="static/metronic/demo1/assets/media/illustrations/sketchy-1/12.png" class="mh-125px mb-9" alt="" />
-								<!--end::Illustration-->
-								<!--begin::Heading-->
-								<div class="d-flex flex-center mb-5">
-									<!--begin::Badge-->
-									<span class="badge badge-circle badge-light-success fw-bolder p-5 me-3 fs-3">3</span>
-									<!--end::Badge-->
-									<!--begin::Title-->
-									<div class="fs-5 fs-lg-3 fw-bolder text-dark">UAT and Accreditation</div>
-									<!--end::Title-->
-								</div>
-								<!--end::Heading-->
-								<!--begin::Description-->
-								<div class="fw-bold fs-6 fs-lg-4 text-muted">Sit back and relax as we schedule your
-								<br />UAT, get you accredited,
-								<br />and provide 24hr invoice support</div>
-								<!--end::Description-->
-							</div>
-							<!--end::Story-->
-						</div>
-						<!--end::Col-->
-					</div>
-					<!--end::Row-->
-					<!--begin::Product slider-->
-					<div class="tns tns-default">
-						<!--begin::Slider-->
-						<div data-tns="true" data-tns-loop="true" data-tns-swipe-angle="false" data-tns-speed="2000" data-tns-autoplay="true" data-tns-autoplay-timeout="18000" data-tns-controls="true" data-tns-nav="false" data-tns-items="1" data-tns-center="false" data-tns-dots="false" data-tns-prev-button="#kt_team_slider_prev1" data-tns-next-button="#kt_team_slider_next1">
-							<!--begin::Item-->
-							<div class="text-center px-5 pt-5 pt-lg-10 px-lg-10">
-								<img src="static/metronic/demo1/assets/media/product-demos/demo1.png" class="card-rounded shadow mw-100" alt="" />
-							</div>
-							<!--end::Item-->
-							<!--begin::Item-->
-							<div class="text-center px-5 pt-5 pt-lg-10 px-lg-10">
-								<img src="static/metronic/demo1/assets/media/product-demos/demo2.png" class="card-rounded shadow mw-100" alt="" />
-							</div>
-							<!--end::Item-->
-							<!--begin::Item-->
-							<div class="text-center px-5 pt-5 pt-lg-10 px-lg-10">
-								<img src="static/metronic/demo1/assets/media/product-demos/demo4.png" class="card-rounded shadow mw-100" alt="" />
-							</div>
-							<!--end::Item-->
-							<!--begin::Item-->
-							<div class="text-center px-5 pt-5 pt-lg-10 px-lg-10">
-								<img src="static/metronic/demo1/assets/media/product-demos/demo5.png" class="card-rounded shadow mw-100" alt="" />
-							</div>
-							<!--end::Item-->
-						</div>
-						<!--end::Slider-->
-						<!--begin::Slider button-->
-						<button class="btn btn-icon btn-active-color-primary" id="kt_team_slider_prev1">
-							<!--begin::Svg Icon | path: icons/duotune/arrows/arr074.svg-->
-							<span class="svg-icon svg-icon-3x">
-								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-									<path d="M11.2657 11.4343L15.45 7.25C15.8642 6.83579 15.8642 6.16421 15.45 5.75C15.0358 5.33579 14.3642 5.33579 13.95 5.75L8.40712 11.2929C8.01659 11.6834 8.01659 12.3166 8.40712 12.7071L13.95 18.25C14.3642 18.6642 15.0358 18.6642 15.45 18.25C15.8642 17.8358 15.8642 17.1642 15.45 16.75L11.2657 12.5657C10.9533 12.2533 10.9533 11.7467 11.2657 11.4343Z" fill="black" />
-								</svg>
-							</span>
-							<!--end::Svg Icon-->
-						</button>
-						<!--end::Slider button-->
-						<!--begin::Slider button-->
-						<button class="btn btn-icon btn-active-color-primary" id="kt_team_slider_next1">
-							<!--begin::Svg Icon | path: icons/duotune/arrows/arr071.svg-->
-							<span class="svg-icon svg-icon-3x">
-								<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-									<path d="M12.6343 12.5657L8.45001 16.75C8.0358 17.1642 8.0358 17.8358 8.45001 18.25C8.86423 18.6642 9.5358 18.6642 9.95001 18.25L15.4929 12.7071C15.8834 12.3166 15.8834 11.6834 15.4929 11.2929L9.95001 5.75C9.5358 5.33579 8.86423 5.33579 8.45001 5.75C8.0358 6.16421 8.0358 6.83579 8.45001 7.25L12.6343 11.4343C12.9467 11.7467 12.9467 12.2533 12.6343 12.5657Z" fill="black" />
-								</svg>
-							</span>
-							<!--end::Svg Icon-->
-						</button>
-						<!--end::Slider button-->
-					</div>
-					<!--end::Product slider-->
-				</div>
-				<!--end::Container-->
-			</div>
-			<!--end::How It Works Section-->
-			<!--begin::Statistics Section-->
-			<div class="mt-sm-n10">
-				<!--begin::Curve top-->
-				<div class="landing-curve landing-dark-color">
-					<svg viewBox="15 -1 1470 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-						<path d="M1 48C4.93573 47.6644 8.85984 47.3311 12.7725 47H1489.16C1493.1 47.3311 1497.04 47.6644 1501 48V47H1489.16C914.668 -1.34764 587.282 -1.61174 12.7725 47H1V48Z" fill="currentColor"></path>
-					</svg>
-				</div>
-				<!--end::Curve top-->
-				<!--begin::Wrapper-->
-				<div class="pb-15 pt-18 landing-dark-bg">
-					<!--begin::Container-->
-					<div class="container">
-						<!--begin::Heading-->
-						<div class="text-center mt-15 mb-18" id="achievements" data-kt-scroll-offset="{default: 100, lg: 150}">
-							<!--begin::Title-->
-							<h3 class="fs-2hx text-white fw-bolder mb-5">One Integration, Many Countries</h3>
-							<!--end::Title-->
-							<!--begin::Description-->
-							<div class="fs-5 text-gray-700 fw-bold">Save thousands to millions of bucks by using single integration
-							<br />for fiscal invoicing tax compliance in several countries</div>
-							<!--end::Description-->
-						</div>
-						<!--end::Heading-->
-						<!--begin::Statistics-->
-						<div class="d-flex flex-center">
-							<!--begin::Items-->
-							<div class="d-flex flex-wrap flex-center justify-content-lg-between mb-15 mx-auto w-xl-900px">
-								<!--begin::Item-->
-								<div class="d-flex flex-column flex-center h-200px w-200px h-lg-250px w-lg-250px m-3 bgi-no-repeat bgi-position-center bgi-size-contain" style="background-image: url('static/metronic/demo1/assets/media/svg/misc/octagon.svg')">
-									<!--begin::Symbol-->
-									<!--begin::Svg Icon | path: icons/duotune/general/gen025.svg-->
-									<span class="svg-icon svg-icon-2tx svg-icon-white mb-3">
-										<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-											<rect x="2" y="2" width="9" height="9" rx="2" fill="black" />
-											<rect opacity="0.3" x="13" y="2" width="9" height="9" rx="2" fill="black" />
-											<rect opacity="0.3" x="13" y="13" width="9" height="9" rx="2" fill="black" />
-											<rect opacity="0.3" x="2" y="13" width="9" height="9" rx="2" fill="black" />
-										</svg>
-									</span>
-									<!--end::Svg Icon-->
-									<!--end::Symbol-->
-									<!--begin::Info-->
-									<div class="mb-0">
-										<!--begin::Value-->
-										<div class="fs-lg-2hx fs-2x fw-bolder text-white d-flex flex-center">
-											<div class="min-w-70px" data-kt-countup="true" data-kt-countup-value="10" data-kt-countup-suffix="+">0</div>
-										</div>
-										<!--end::Value-->
-										<!--begin::Label-->
-										<span class="text-gray-600 fw-bold fs-5 lh-0">Known Companies</span>
-										<!--end::Label-->
-									</div>
-									<!--end::Info-->
-								</div>
-								<!--end::Item-->
-								<!--begin::Item-->
-								<div class="d-flex flex-column flex-center h-200px w-200px h-lg-250px w-lg-250px m-3 bgi-no-repeat bgi-position-center bgi-size-contain" style="background-image: url('static/metronic/demo1/assets/media/svg/misc/octagon.svg')">
-									<!--begin::Symbol-->
-									<!--begin::Svg Icon | path: icons/duotune/graphs/gra008.svg-->
-									<span class="svg-icon svg-icon-2tx svg-icon-white mb-3">
-										<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-											<path d="M13 10.9128V3.01281C13 2.41281 13.5 1.91281 14.1 2.01281C16.1 2.21281 17.9 3.11284 19.3 4.61284C20.7 6.01284 21.6 7.91285 21.9 9.81285C22 10.4129 21.5 10.9128 20.9 10.9128H13Z" fill="black" />
-											<path opacity="0.3" d="M13 12.9128V20.8129C13 21.4129 13.5 21.9129 14.1 21.8129C16.1 21.6129 17.9 20.7128 19.3 19.2128C20.7 17.8128 21.6 15.9128 21.9 14.0128C22 13.4128 21.5 12.9128 20.9 12.9128H13Z" fill="black" />
-											<path opacity="0.3" d="M11 19.8129C11 20.4129 10.5 20.9129 9.89999 20.8129C5.49999 20.2129 2 16.5128 2 11.9128C2 7.31283 5.39999 3.51281 9.89999 3.01281C10.5 2.91281 11 3.41281 11 4.01281V19.8129Z" fill="black" />
-										</svg>
-									</span>
-									<!--end::Svg Icon-->
-									<!--end::Symbol-->
-									<!--begin::Info-->
-									<div class="mb-0">
-										<!--begin::Value-->
-										<div class="fs-lg-2hx fs-2x fw-bolder text-white d-flex flex-center">
-											<div class="min-w-70px" data-kt-countup="true" data-kt-countup-value="6" data-kt-countup-suffix="+">0</div>
-										</div>
-										<!--end::Value-->
-										<!--begin::Label-->
-										<span class="text-gray-600 fw-bold fs-5 lh-0">Integrated ERP's</span>
-										<!--end::Label-->
-									</div>
-									<!--end::Info-->
-								</div>
-								<!--end::Item-->
-								<!--begin::Item-->
-								<div class="d-flex flex-column flex-center h-200px w-200px h-lg-250px w-lg-250px m-3 bgi-no-repeat bgi-position-center bgi-size-contain" style="background-image: url('static/metronic/demo1/assets/media/svg/misc/octagon.svg')">
-									<!--begin::Symbol-->
-									<!--begin::Svg Icon | path: icons/duotune/ecommerce/ecm002.svg-->
-									<span class="svg-icon svg-icon-2tx svg-icon-white mb-3">
-										<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-											<path d="M21 10H13V11C13 11.6 12.6 12 12 12C11.4 12 11 11.6 11 11V10H3C2.4 10 2 10.4 2 11V13H22V11C22 10.4 21.6 10 21 10Z" fill="black" />
-											<path opacity="0.3" d="M12 12C11.4 12 11 11.6 11 11V3C11 2.4 11.4 2 12 2C12.6 2 13 2.4 13 3V11C13 11.6 12.6 12 12 12Z" fill="black" />
-											<path opacity="0.3" d="M18.1 21H5.9C5.4 21 4.9 20.6 4.8 20.1L3 13H21L19.2 20.1C19.1 20.6 18.6 21 18.1 21ZM13 18V15C13 14.4 12.6 14 12 14C11.4 14 11 14.4 11 15V18C11 18.6 11.4 19 12 19C12.6 19 13 18.6 13 18ZM17 18V15C17 14.4 16.6 14 16 14C15.4 14 15 14.4 15 15V18C15 18.6 15.4 19 16 19C16.6 19 17 18.6 17 18ZM9 18V15C9 14.4 8.6 14 8 14C7.4 14 7 14.4 7 15V18C7 18.6 7.4 19 8 19C8.6 19 9 18.6 9 18Z" fill="black" />
-										</svg>
-									</span>
-									<!--end::Svg Icon-->
-									<!--end::Symbol-->
-									<!--begin::Info-->
-									<div class="mb-0">
-										<!--begin::Value-->
-										<div class="fs-lg-2hx fs-2x fw-bolder text-white d-flex flex-center">
-											<div class="min-w-70px" data-kt-countup="true" data-kt-countup-value="5" data-kt-countup-suffix="+">0</div>
-										</div>
-										<!--end::Value-->
-										<!--begin::Label-->
-										<span class="text-gray-600 fw-bold fs-5 lh-0">Countries Supported</span>
-										<!--end::Label-->
-									</div>
-									<!--end::Info-->
-								</div>
-								<!--end::Item-->
-							</div>
-							<!--end::Items-->
-						</div>
-						<!--end::Statistics-->
-						<!--begin::Testimonial-->
-						<div class="fs-2 fw-bold text-muted text-center mb-3">
-						<span class="fs-1 lh-1 text-gray-700">“</span>Of life’s two certainties,
-						<br />
-						<span class="text-gray-700 me-1">the only one </span>for which you can get an automatic extension
-						<span class="fs-1 lh-1 text-gray-700">“</span></div>
-						<!--end::Testimonial-->
-						<!--begin::Author-->
-						<div class="fs-2 fw-bold text-muted text-center">
-							<a href="../../demo1/dist/account/security.html" class="link-primary fs-4 fw-bolder">Anonymous,</a>
-							<span class="fs-4 fw-bolder text-gray-600">Paymoja</span>
-						</div>
-						<!--end::Author-->
-					</div>
-					<!--end::Container-->
-				</div>
-				<!--end::Wrapper-->
-				<!--begin::Curve bottom-->
-				<div class="landing-curve landing-dark-color">
-					<svg viewBox="15 12 1470 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-						<path d="M0 11C3.93573 11.3356 7.85984 11.6689 11.7725 12H1488.16C1492.1 11.6689 1496.04 11.3356 1500 11V12H1488.16C913.668 60.3476 586.282 60.6117 11.7725 12H0V11Z" fill="currentColor"></path>
-					</svg>
-				</div>
-				<!--end::Curve bottom-->
-			</div>
-			<!--end::Statistics Section-->
-						<!--begin::Team Section-->
-		
-			<!--end::Team Section-->
-			<!--begin::Projects Section-->
-			
-			<!--end::Projects Section-->
-			<!--begin::Pricing Section-->
-		
-			<!--end::Pricing Section-->
-				<!--begin::Testimonials Section-->
-			
-			<!--end::Testimonials Section-->
-			<!--begin::Footer Section-->
-			
-			<!--end::Footer Section-->
-
-			<!--begin::Scrolltop-->
-			
-			<!--end::Scrolltop-->
+<body>
+	<!-- Navigation -->
+	<nav class="navbar" id="navbar">
+		<div class="nav-container">
+			<a href="/" class="logo">Centry Tax</a>
+			<ul class="nav-links">
+				<li><a href="#features">Features</a></li>
+				<li><a href="#how-it-works">How It Works</a></li>
+				<li><a href="#integrations">Integrations</a></li>
+				<li><a href="/docs" class="btn btn-primary">Documentation</a></li>
+			</ul>
 		</div>
-		<!--end::Root-->
-		<!--end::Main-->
-		<!--begin::Javascript-->
-		<script>var hostUrl = "../../static/metronic/demo1/assets/";</script>
-		<!--begin::Global Javascript Bundle(used by all pages)-->
-		<script src="../../static/metronic/demo1/assets/plugins/global/plugins.bundle.js"></script>
-		<script src="../../static/metronic/demo1/assets/js/scripts.bundle.js"></script>
-		<!--end::Global Javascript Bundle-->
-		<!--begin::Page Vendors Javascript(used by this page)-->
-		<script src="../../static/metronic/demo1/assets/plugins/custom/fslightbox/fslightbox.bundle.js"></script>
-		<script src="../../static/metronic/demo1/assets/plugins/custom/typedjs/typedjs.bundle.js"></script>
-		<!--end::Page Vendors Javascript-->
-		<!--begin::Page Custom Javascript(used by this page)-->
-		<script src="../../static/metronic/demo1/assets/js/custom/landing.js"></script>
-		<script src="../../static/metronic/demo1/assets/js/custom/pages/pricing/general.js"></script>
-		<!--end::Page Custom Javascript-->
-		<!--end::Javascript-->
-	</body>
-	<!--end::Body-->
+	</nav>
+
+	<!-- Hero Section -->
+	<section class="hero">
+		<div class="hero-container">
+			<div class="hero-content">
+				<h1>
+					Automated Global <span class="highlight">Fiscal Invoicing</span> Made Simple
+				</h1>
+				<p>
+					Seamlessly integrate your ERP with tax authorities across Africa and beyond. 
+					One API, multiple countries, complete compliance.
+				</p>
+				<div class="hero-buttons">
+					<a href="/docs" class="btn btn-primary">Get Started</a>
+					<a href="#how-it-works" class="btn btn-outline">Learn More</a>
+				</div>
+			</div>
+			<div class="hero-image">
+				<div style="background: linear-gradient(135deg, rgba(99, 140, 128, 0.1), rgba(99, 140, 128, 0.05)); 
+							padding: 3rem; 
+							border-radius: 20px; 
+							text-align: center;">
+					<div style="font-size: 8rem; color: var(--centry-primary); opacity: 0.7;">📊</div>
+					<h3 style="color: var(--centry-primary); margin-top: 1rem;">Enterprise-Grade Solution</h3>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Stats Bar -->
+	<div style="padding: 0 3rem;">
+		<div class="stats-bar">
+			<div class="stat-item">
+				<span class="stat-number">10+</span>
+				<span class="stat-label">Countries Supported</span>
+			</div>
+			<div class="stat-item">
+				<span class="stat-number">5+</span>
+				<span class="stat-label">ERP Integrations</span>
+			</div>
+			<div class="stat-item">
+				<span class="stat-number">99.9%</span>
+				<span class="stat-label">Uptime</span>
+			</div>
+			<div class="stat-item">
+				<span class="stat-number">24/7</span>
+				<span class="stat-label">Support</span>
+			</div>
+		</div>
+	</div>
+
+	<!-- Features Section -->
+	<section class="features" id="features">
+		<div class="features-container">
+			<div class="section-header">
+				<span class="section-tag">Our Solutions</span>
+				<h2 class="section-title">Everything You Need for Tax Compliance</h2>
+				<p class="section-description">
+					Comprehensive tools and integrations to streamline your fiscal operations
+				</p>
+			</div>
+			
+			<div class="features-grid">
+				<div class="feature-card">
+					<div class="feature-icon">🔗</div>
+					<h3>ERP Integration</h3>
+					<p>
+						Connect seamlessly with Xero, QuickBooks, Dear Inventory, OrderEasy, and more. 
+						Real-time synchronization ensures your data is always up-to-date.
+					</p>
+				</div>
+
+				<div class="feature-card">
+					<div class="feature-icon">📋</div>
+					<h3>EFRIS Compliance</h3>
+					<p>
+						Automated compliance with Uganda Revenue Authority's Electronic Fiscal 
+						Receipting and Invoicing System with full audit trails.
+					</p>
+				</div>
+
+				<div class="feature-card">
+					<div class="feature-icon">🧾</div>
+					<h3>Invoice Management</h3>
+					<p>
+						Create, manage, and submit invoices to tax authorities automatically. 
+						Reduce manual work and eliminate errors.
+					</p>
+				</div>
+
+				<div class="feature-card">
+					<div class="feature-icon">📦</div>
+					<h3>Inventory Control</h3>
+					<p>
+						Real-time inventory tracking and management across all your integrated 
+						platforms with automatic stock updates.
+					</p>
+				</div>
+
+				<div class="feature-card">
+					<div class="feature-icon">🔐</div>
+					<h3>Enterprise Security</h3>
+					<p>
+						Bank-level encryption, OAuth2 authentication, and secure data transmission. 
+						Your data is protected at every step.
+					</p>
+				</div>
+
+				<div class="feature-card">
+					<div class="feature-icon">⚡</div>
+					<h3>Real-Time Sync</h3>
+					<p>
+						Automatic synchronization ensures your data is consistent across all systems. 
+						No manual updates required.
+					</p>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- How It Works Section -->
+	<section class="how-it-works" id="how-it-works">
+		<div class="how-container">
+			<div class="section-header">
+				<span class="section-tag">Process</span>
+				<h2 class="section-title">How It Works</h2>
+				<p class="section-description">
+					Get started in three simple steps and start automating your tax compliance today
+				</p>
+			</div>
+
+			<div class="steps-grid">
+				<div class="step-card">
+					<div class="step-number">1</div>
+					<h3>Connect Your ERP</h3>
+					<p>
+						Choose from our supported ERPs including Xero, QuickBooks, Dear Inventory, 
+						or contact us for custom integration. Save time and money with our 
+						pre-built connectors.
+					</p>
+				</div>
+
+				<div class="step-card">
+					<div class="step-number">2</div>
+					<h3>Configure Tax Credentials</h3>
+					<p>
+						Provide your tax authority credentials and let us configure your system. 
+						Our team ensures everything is set up correctly for seamless operation.
+					</p>
+				</div>
+
+				<div class="step-card">
+					<div class="step-number">3</div>
+					<h3>Go Live</h3>
+					<p>
+						We handle UAT testing and accreditation with tax authorities. Relax while 
+						we provide 24/7 support for your automated invoicing system.
+					</p>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Integrations Section -->
+	<section class="integrations" id="integrations">
+		<div class="integrations-container">
+			<div class="section-header">
+				<span class="section-tag">Integrations</span>
+				<h2 class="section-title">Connect With Your Favorite Tools</h2>
+				<p class="section-description">
+					Seamless integration with the world's leading accounting and ERP systems
+				</p>
+			</div>
+
+			<div class="integrations-grid">
+				<div class="integration-card">
+					<h4>🟢 Xero</h4>
+				</div>
+				<div class="integration-card">
+					<h4>🟢 QuickBooks</h4>
+				</div>
+				<div class="integration-card">
+					<h4>🟢 Dear Inventory</h4>
+				</div>
+				<div class="integration-card">
+					<h4>🟢 OrderEasy</h4>
+				</div>
+				<div class="integration-card">
+					<h4>🟢 URA EFRIS</h4>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- CTA Section -->
+	<section class="cta-section">
+		<div class="cta-container">
+			<h2>Ready to Transform Your Tax Management?</h2>
+			<p>
+				Join hundreds of businesses streamlining their tax processes with Centry Tax. 
+				Start your journey to automated compliance today.
+			</p>
+			<a href="/docs" class="btn btn-white">Get Started Now</a>
+		</div>
+	</section>
+
+	<!-- Footer -->
+	<footer>
+		<div class="footer-container">
+			<div class="footer-brand">
+				<h3>Centry Tax</h3>
+				<p>
+					Simplifying tax management for modern businesses with automated global 
+					fiscal invoicing solutions.
+				</p>
+			</div>
+
+			<div class="footer-section">
+				<h4>Product</h4>
+				<ul>
+					<li><a href="#features">Features</a></li>
+					<li><a href="#integrations">Integrations</a></li>
+					<li><a href="/docs">API Documentation</a></li>
+					<li><a href="#how-it-works">How It Works</a></li>
+				</ul>
+			</div>
+
+			<div class="footer-section">
+				<h4>Resources</h4>
+				<ul>
+					<li><a href="/docs">Documentation</a></li>
+					<li><a href="#">Help Center</a></li>
+					<li><a href="#">Blog</a></li>
+					<li><a href="#">Community</a></li>
+				</ul>
+			</div>
+
+			<div class="footer-section">
+				<h4>Company</h4>
+				<ul>
+					<li><a href="#">About Us</a></li>
+					<li><a href="#">Contact</a></li>
+					<li><a href="#">Privacy Policy</a></li>
+					<li><a href="#">Terms of Service</a></li>
+				</ul>
+			</div>
+		</div>
+
+		<div class="footer-bottom">
+			<p>&copy; 2025 Centry Tax. All rights reserved.</p>
+		</div>
+	</footer>
+
+	<script>
+		// Navbar scroll effect
+		window.addEventListener('scroll', function() {
+			const navbar = document.getElementById('navbar');
+			if (window.scrollY > 50) {
+				navbar.classList.add('scrolled');
+			} else {
+				navbar.classList.remove('scrolled');
+			}
+		});
+
+		// Smooth scrolling
+		document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+			anchor.addEventListener('click', function (e) {
+				e.preventDefault();
+				const target = document.querySelector(this.getAttribute('href'));
+				if (target) {
+					target.scrollIntoView({
+						behavior: 'smooth',
+						block: 'start'
+					});
+				}
+			});
+		});
+	</script>
+</body>
 </html>
