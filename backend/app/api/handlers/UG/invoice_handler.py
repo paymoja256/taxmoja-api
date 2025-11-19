@@ -127,9 +127,14 @@ class TaxInvoiceHandler(InvoiceHandler):
                     is_exempt = tax_detail["isExempt"]
 
                 measure_unit = tax_detail["measureUnit"]
+                piece_measure_unit = tax_detail["pieceMeasureUnit"]
                 self.set_tax_categories(
                     is_exempt, is_zero_rate, self.invoice_data.is_export
                 )
+                if self.invoice_data.is_export:
+                    custom_measure_unit =  tax_detail["commodityGoodsExtendEntity"]["customsMeasureUnit"]
+                    piece_measure_unit = custom_measure_unit if custom_measure_unit else piece_measure_unit
+                    
                 if proceed:
                     if self.erp.upper() in ("DEAR", "EXCLUSIVE"):
                         # Item price is tax exclusive
@@ -181,8 +186,9 @@ class TaxInvoiceHandler(InvoiceHandler):
                         "exciseRate": "",
                         "exciseRule": "",
                         "exciseTax": "",
-                        "totalWeight": "0.5165",
-                        "pieceQty": "1",
+                        "totalWeight": "6.34",
+                        "pieceQty": quantity,
+                        "pieceMeasureUnit": piece_measure_unit,
                         "pack": "",
                         "stick": "",
                         "exciseUnit": "",
@@ -640,7 +646,7 @@ class TaxInvoiceHandler(InvoiceHandler):
             self.tax_symbol = "02"
             self.tax_rate = "0.00"
             self.tax_value = "0.00"
-            self.tax_category = "exempt"
+            self.tax_category = "Zero Rate"
             self.industry_code = "102"
         elif is_exempt == "101":
             self.tax_symbol = "03"
