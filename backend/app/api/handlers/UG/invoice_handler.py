@@ -125,9 +125,13 @@ class TaxInvoiceHandler(InvoiceHandler):
                 else:
                     is_zero_rate = tax_detail["isZeroRate"]
                     is_exempt = tax_detail["isExempt"]
-
+                
                 measure_unit = tax_detail["measureUnit"]
-                piece_measure_unit = tax_detail["pieceMeasureUnit"]
+                try:
+                    piece_measure_unit = tax_detail["pieceMeasureUnit"]
+                    
+                except KeyError:
+                    piece_measure_unit = measure_unit
                 self.set_tax_categories(
                     is_exempt, is_zero_rate, self.invoice_data.is_export
                 )
