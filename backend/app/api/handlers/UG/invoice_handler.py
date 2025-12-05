@@ -48,6 +48,7 @@ class TaxInvoiceHandler(InvoiceHandler):
         self.qr_code = ""
         self.upload_code = ""
         self.upload_desc = ""
+        self.custom_scale_unit = 1
         self.invoice_type = "1"
         self.tax_symbol = "03"
         self.tax_rate = "-"
@@ -125,20 +126,24 @@ class TaxInvoiceHandler(InvoiceHandler):
                 else:
                     is_zero_rate = tax_detail["isZeroRate"]
                     is_exempt = tax_detail["isExempt"]
-                
+
                 measure_unit = tax_detail["measureUnit"]
                 try:
                     piece_measure_unit = tax_detail["pieceMeasureUnit"]
-                    
+
                 except KeyError:
                     piece_measure_unit = measure_unit
                 self.set_tax_categories(
                     is_exempt, is_zero_rate, self.invoice_data.is_export
                 )
                 if self.invoice_data.is_export:
-                    custom_measure_unit =  tax_detail["commodityGoodsExtendEntity"]["customsMeasureUnit"]
-                    piece_measure_unit = custom_measure_unit if custom_measure_unit else piece_measure_unit
-                    
+                    try:
+                        custom_measure_unit = tax_detail["commodityGoodsExtendEntity"]["customsMeasureUnit"]
+                        piece_measure_unit = custom_measure_unit
+                        self.custom_scale_unit = tax_detail["commodityGoodsExtendEntity"]["packageScaledValueCustoms"]
+                    except KeyError:
+                        custom_measure_unit = piece_measure_unit
+
                 if proceed:
                     if self.erp.upper() in ("DEAR", "EXCLUSIVE"):
                         # Item price is tax exclusive
@@ -191,7 +196,7 @@ class TaxInvoiceHandler(InvoiceHandler):
                         "exciseRule": "",
                         "exciseTax": "",
                         "totalWeight": "6.34",
-                        "pieceQty": quantity,
+                        "pieceQty": str(int(quantity)/int(self.custom_scale_unit)),
                         "pieceMeasureUnit": piece_measure_unit,
                         "pack": "",
                         "stick": "",
