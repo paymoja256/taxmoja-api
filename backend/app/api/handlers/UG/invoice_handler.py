@@ -68,6 +68,8 @@ class TaxInvoiceHandler(InvoiceHandler):
         self.credit_summary_detail = {}
         self.attachments = []
         self.industry_code = "101"
+        self.piece_qty = '1'
+        self.total_weight = ''
 
     async def convert_request(self, db, tax_invoice: TaxInvoiceIncomingSchema):
         await self.client.get_key_signature()
@@ -141,6 +143,10 @@ class TaxInvoiceHandler(InvoiceHandler):
                         custom_measure_unit = tax_detail["commodityGoodsExtendEntity"]["customsMeasureUnit"]
                         piece_measure_unit = custom_measure_unit
                         self.custom_scale_unit = tax_detail["commodityGoodsExtendEntity"]["packageScaledValueCustoms"]
+                        self.piece_qty = float(quantity) / \
+                            float(self.custom_scale_unit)
+                        self.total_weight = str(
+                            self.piece_qty * float(6.34))
                     except KeyError:
                         custom_measure_unit = piece_measure_unit
 
@@ -173,6 +179,8 @@ class TaxInvoiceHandler(InvoiceHandler):
                         self.total_gross_amount = self.total_gross_amount + \
                             float(total)
 
+                        
+
                     goods_detail = {
                         "item": tax_detail["goodsName"],
                         "itemCode": tax_detail["goodsCode"],
@@ -195,8 +203,8 @@ class TaxInvoiceHandler(InvoiceHandler):
                         "exciseRate": "",
                         "exciseRule": "",
                         "exciseTax": "",
-                        "totalWeight": "6.34",
-                        "pieceQty": str(int(quantity)/int(self.custom_scale_unit)),
+                        "totalWeight": self.total_weight,
+                        "pieceQty": self.piece_qty,
                         "pieceMeasureUnit": piece_measure_unit,
                         "pack": "",
                         "stick": "",
