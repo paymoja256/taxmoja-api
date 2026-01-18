@@ -2,6 +2,7 @@ import structlog
 from sqlalchemy import create_engine
 from starlette.config import Config
 from starlette.datastructures import Secret
+import os
 
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -11,7 +12,12 @@ struct_logger = structlog.get_logger(__name__)
 
 # Project Details
 
-config = Config(".env")
+# Use .env file only if it exists, otherwise rely on environment variables
+if os.path.exists(".env"):
+    config = Config(".env")
+else:
+    # Use environment variables directly without .env file (for Azure deployment)
+    config = Config(environ=os.environ)
 PROJECT_NAME = "Taxmoja by Paymoja"
 VERSION = "1.0.0"
 API_PREFIX = ""
